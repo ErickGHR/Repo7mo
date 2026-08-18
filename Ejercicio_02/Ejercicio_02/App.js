@@ -1,13 +1,12 @@
 import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, View } from 'react-native';
 import Banner from './components/Banner';
+import RepText from './components/ReplicaTexto';
 
 export default function App() {
   return (
     <View style={styles.container}>
-      <Text>Open up App.js to start working on your app!</Text>
-      <Banner>Esto es el texto en children</Banner>
-      <StatusBar style="auto" />
+      <RepText/>
     </View>
   );
 }

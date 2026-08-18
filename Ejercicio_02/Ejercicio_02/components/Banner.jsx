@@ -1,13 +1,15 @@
-import { Stylesheet, View} from "react-native";
-export default function Banner ({children}){
+import { StyleSheet, View, Text} from "react-native";
+export default function Banner ({children, titulo}){
     return(
-        <view>
+
+        <View style={styles.texto}>
+            <Text>{titulo}</Text>
             {children}
-        </view>
+        </View>
     );
 }
 
-const styles=Stylesheet.create({
+const styles=StyleSheet.create({
     texto:{
         color:"red"
     },
