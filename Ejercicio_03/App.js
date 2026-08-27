@@ -1,82 +1,67 @@
-import React from "react";
-import { useState } from "react";
-import {
-  View,
-  Button,
-  SafeAreaView,
-  StyleSheet,
-  Text,
-} from "react-native";
-
-import CustomModal from "./componentes/CustomModal";
-import DemoFlatList from "./componentes/DemoFlatList";
-import DemoSectionList from "./componentes/DemoSectionList";
+import { StyleSheet, Text, View, Modal, Button } from 'react-native';
+import { useState } from 'react';
 
 export default function App() {
-  const [modalVisible, setModalVisible] = useState(false);
-
-  const objetoContenido = {
-    valor: "Juan Perez",
-  };
+  const [modal, setModal] = useState(false);
 
   return (
-    <SafeAreaView style={styles.container}>
-      <View style={styles.boton}>
-        <Button
-          title="Ver mensaje"
-          onPress={() => setModalVisible(true)}
-        />
-      </View>
+    <View style={styles.container}>
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={modal}
+      >
+        <View style={styles.center}>
+          <View style={styles.contenido}>
+            <Text>Esto es un modal</Text>
 
-      <CustomModal
-        visible={modalVisible}
-        onClose={() => setModalVisible(false)}
-        contenido={objetoContenido}
+            <Button
+              title="Close Modal"
+              onPress={() => setModal(false)}
+            />
+          </View>
+        </View>
+      </Modal>
+
+      <Text>Este texto esta fuera del modal</Text>
+      <Text>Este texto esta fuera del modal</Text>
+      <Text>Este texto esta fuera del modal</Text>
+      <Text>Este texto esta fuera del modal</Text>
+      <Text>Este texto esta fuera del modal</Text>
+      <Text>Este texto esta fuera del modal</Text>
+      <Text>Este texto esta fuera del modal</Text>
+      <Text>Este texto esta fuera del modal</Text>
+      <Text>Este texto esta fuera del modal</Text>
+      <Button
+        title="Open Modal"
+        onPress={() => setModal(true)}
       />
-
-      <View style={styles.listas}>
-        <View style={styles.lista}>
-          <Text style={styles.titulo}>FlatList</Text>
-
-          <DemoFlatList />
-        </View>
-
-        <View style={styles.lista}>
-          <Text style={styles.titulo}>SectionList</Text>
-
-          <DemoSectionList />
-        </View>
-      </View>
-    </SafeAreaView>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "red",
-    padding: 20,
+    backgroundColor: '#fff',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
 
-  boton: {
-    marginBottom: 20,
-  },
-
-  listas: {
+  center: {
     flex: 1,
-    flexDirection: "row",
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: 'rgba(0,0,0,0.5)',
+  },
+
+  contenido: {
+    width: 300,
+    padding: 30,
+    backgroundColor: 'rgba(73,156,200,1)',
+    alignItems: 'center',
+    justifyContent: 'center',
     gap: 20,
-  },
-
-  lista: {
-    flex: 1,
-    backgroundColor: "white",
-  },
-
-  titulo: {
-    fontSize: 20,
-    fontWeight: "bold",
-    textAlign: "center",
-    padding: 10,
+    borderRadius: 15,
   },
 });
