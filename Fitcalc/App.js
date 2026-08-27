@@ -73,8 +73,7 @@ export default function App() {
       <Modal
         visible={modalVisible}
         transparent={true}
-        animationType="fade"
-        >
+        animationType="fade">
         <View style={styles.fondoModal}>
           <View style={styles.modal}>
             <Text style={styles.resultadoTitulo}>
