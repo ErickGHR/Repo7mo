@@ -35,17 +35,24 @@ La colección consultada se llama `movies`.
 
 ## Rutas y comprobaciones
 
+- `POST /auth/login`: valida el usuario y la contraseña directamente con Atlas y
+  crea una sesión temporal de una hora.
+- `POST /auth/logout`: invalida la sesión actual.
 - `GET /health`: comprueba MongoDB; responde 200 o 503.
 - `GET /movies`: devuelve hasta 100 películas ordenadas por `_id`, con título,
-  descripción y póster. El límite evita descargar toda la base de ejemplo.
+  descripción, año y póster. Requiere sesión.
+- `GET /movies/:id`: devuelve la ficha completa, incluyendo sinopsis, estreno,
+  duración, reparto, dirección y guion. Requiere sesión.
 - `npm test`: prueba las respuestas HTTP, CORS y fallos con una base simulada.
 - `npm run check`: revisa la sintaxis del servidor.
+
+El servidor limita los intentos de acceso y no registra las contraseñas. Las
+sesiones viven en memoria, así que se eliminan al reiniciar el servidor.
 
 En PowerShell puedes comprobar la conexión real con:
 
 ```powershell
 Invoke-RestMethod http://localhost:3000/health
-Invoke-RestMethod http://localhost:3000/movies
 ```
 
 Para acceder desde el celular, usa la IP local de esta computadora y permite Node.js

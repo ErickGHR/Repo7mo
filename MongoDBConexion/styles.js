@@ -1,6 +1,22 @@
 import { StyleSheet } from 'react-native';
 
 export const styles = StyleSheet.create({
+  loginPage: { flexGrow: 1, justifyContent: 'center', width: '100%', maxWidth: 540, alignSelf: 'center', padding: 24 },
+  loginCard: { backgroundColor: '#fffdf5', padding: 24, borderRadius: 24, marginTop: 30 },
+  formHelp: { color: '#65716a', lineHeight: 21, marginTop: 10, marginBottom: 20 },
+  fieldLabel: { color: '#203a33', fontWeight: '700', fontSize: 13, marginBottom: 8 },
+  input: { borderWidth: 1, borderColor: '#cbd6cd', backgroundColor: '#fff', borderRadius: 10, padding: 14, fontSize: 16, marginBottom: 18, color: '#183b36' },
+  errorText: { color: '#a42c28', marginBottom: 18, lineHeight: 21 },
+  logoutError: { color: '#ffbf87', marginTop: 12 },
+  accountRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 12, flexWrap: 'wrap', marginBottom: 22 },
+  detailLink: { color: '#1d5d50', fontWeight: '700', marginTop: 12 },
+  detailPage: { flex: 1, backgroundColor: '#f5f4ef' },
+  detailBody: { width: '100%', maxWidth: 840, alignSelf: 'center', padding: 24, gap: 16 },
+  detailPoster: { width: 120, height: 180, borderRadius: 14, backgroundColor: '#e8eee3' },
+  movieHero: { flexDirection: 'row', alignItems: 'center', marginBottom: 12 },
+  movieTitle: { fontSize: 24, lineHeight: 30, fontWeight: '800', color: '#183b36', marginBottom: 12 },
+  synopsis: { color: '#52645a', fontSize: 15, lineHeight: 25, marginBottom: 12 },
+  infoBlock: { backgroundColor: '#fff', padding: 16, borderRadius: 12, borderWidth: 1, borderColor: '#e5e8df' },
   container: { flex: 1, backgroundColor: '#142b2b' },
   header: { width: '100%', maxWidth: 840, alignSelf: 'center', paddingHorizontal: 24, paddingTop: 20, paddingBottom: 28 },
   brandRow: { flexDirection: 'row', alignItems: 'center', marginBottom: 24 },

@@ -6,5 +6,5 @@
     "noEmit": true,
     "strict": true
   },
-  "include": ["App.js", "index.js", "styles.js"]
+  "include": ["src/**/*.ts", "src/**/*.tsx", "index.js", "styles.js"]
 }

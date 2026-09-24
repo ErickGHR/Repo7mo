@@ -1,8 +1,8 @@
 # MongoDBConexion
 
 Aplicación Expo / React Native para explorar las películas de `Servidor`.
-Incluye una hoja de estilos en `styles.js`, tarjetas con póster, carga, estado vacío
-y mensajes de error con reintento.
+Incluye inicio de sesión con un usuario de base de datos de MongoDB Atlas,
+catálogo protegido y fichas con sinopsis, año, reparto, dirección y guion.
 
 ## Ejecutar
 
@@ -38,7 +38,12 @@ Sustituye la IP por la de tu computadora (`ipconfig`). En un celular físico,
 acceder a su computadora anfitriona. Recarga la app después de cambiar `.env`.
 Para una compilación de distribución usa una API HTTPS.
 
-La contraseña de MongoDB pertenece únicamente al `.env` de `Servidor`.
+El formulario envía las credenciales al servidor para validarlas con Atlas. La app
+no las guarda y borra la contraseña del formulario después de cada intento.
+La sesión dura una hora y el botón **Cerrar sesión** la invalida en el servidor.
+
+Este acceso directo con credenciales de Atlas está pensado para la práctica local.
+En una app publicada, usa cuentas propias de la aplicación y una API HTTPS.
 
 ## Comprobaciones
 
@@ -49,4 +54,6 @@ npx expo-doctor
 npx expo export --platform all
 ```
 
-La app muestra hasta 100 películas, según el límite de la API.
+La app muestra hasta 100 películas, según el límite de la API. Al pulsar una tarjeta
+se abre su información completa. Tanto el catálogo como los enlaces directos a una
+película requieren una sesión válida.

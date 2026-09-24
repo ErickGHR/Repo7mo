@@ -2,6 +2,7 @@ const { loadEnvFile } = require('node:process');
 const path = require('node:path');
 const { MongoClient } = require('mongodb');
 const { createApp } = require('./app');
+const { createAtlasAuthenticator } = require('./auth');
 
 async function startServer() {
     try {
@@ -24,7 +25,7 @@ async function startServer() {
         await client.connect();
         const db = client.db(process.env.MONGODB_DB || 'sample_mflix');
         await db.command({ ping: 1 });
-        const app = createApp(db);
+        const app = createApp(db, { authenticate: createAtlasAuthenticator(uri, db.databaseName) });
         const server = await new Promise((resolve, reject) => {
             const listener = app.listen(port, '0.0.0.0', () => resolve(listener));
             listener.once('error', reject);
