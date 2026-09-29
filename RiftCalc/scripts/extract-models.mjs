@@ -15,7 +15,6 @@ const models = {
   source: `https://raw.communitydragon.org/${version}/game/data/characters/`,
   champions: {},
 };
-const overrides = { patch, champions: {} };
 for (const id of ["Ahri", "Jinx", "Garen"]) {
   const d = await get(
     `data/characters/${id.toLowerCase()}/${id.toLowerCase()}.bin.json`,
@@ -30,11 +29,6 @@ for (const id of ["Ahri", "Jinx", "Garen"]) {
       calculations: s.mSpellCalculations || {},
     };
   }
-  const r = d[`Characters/${id}/CharacterRecords/Root`];
-  overrides.champions[id] = {
-    attackdamageperlevel: r.damagePerLevelModifiable.baseValue,
-    attackspeedratio: r.attackSpeedRatioModifiable.baseValue,
-  };
 }
 const [items, shared] = await Promise.all([
   get("items.cdtb.bin.json"),
@@ -60,7 +54,6 @@ const effects = {
 };
 for (const [name, data] of Object.entries({
   models: models,
-  "stat-overrides": overrides,
   "effect-reference": effects,
 }))
   await fs.writeFile(`src/data/${name}.json`, JSON.stringify(data, null, 2));

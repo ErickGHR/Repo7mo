@@ -23,9 +23,9 @@ Autor: **Erick Gabriel Hernández Rebolledo**. Proyecto académico desarrollado 
 - [x] Guardado y carga después de recargar la página.
 - [x] Comparación A/B.
 - [x] Especificación de ocho frames de Figma en `design/FIGMA-SPEC.md`.
-- [ ] Archivo real de Figma: creación manual pendiente.
+- [x] Figma retirado del alcance a petición del usuario.
 - [x] README, fuentes, limitaciones y aviso oficial de Riot.
-- [x] 31 pruebas del motor aprobadas.
+- [x] 34 pruebas del motor aprobadas.
 - [x] TypeScript estricto aprobado (`npm run lint`).
 - [x] `npm run build`: exportación web correcta.
 - [x] Exportaciones de bundles Android e iOS correctas.
@@ -41,10 +41,10 @@ Autor: **Erick Gabriel Hernández Rebolledo**. Proyecto académico desarrollado 
 | Nombre | RiftCalc — League Damage Lab |
 | Arquitectura | React Native + Expo + TypeScript; motor puro, adaptador de datos, componentes y persistencia separados |
 | Interfaz | Pantalla principal con tres columnas en escritorio y secciones verticales en móvil; selectores en modales |
-| Figma | Especificación completa; sin archivo ni URL ficticios |
+| Figma | Fuera del alcance; especificación archivada como referencia opcional |
 | Fuentes | Data Dragon oficial es_MX; CommunityDragon 16.19 para fórmulas y correcciones verificadas |
 | Parche | 16.19.1, seleccionado mediante consulta de versiones; snapshot reproducible |
-| Campeones visuales | 173 |
+| Campeones con estadísticas base | 173; crecimiento AD y ratio AS verificados |
 | Campeones con motor | Ahri, Jinx y Garen: modelos MVP de habilidades; ninguno reproduce todas las interacciones del juego |
 | Objetos | 215 en catálogo; estadísticas reconocidas. Efectos/estadísticas especiales de Nashor, Luden, Brillo, Rabadon, Vacío y Botas del Hechicero |
 | Runas | 62 visuales; Electrocutar, Tormenta Creciente, Concentración Absoluta y Golpe de Gracia calculadas |
@@ -56,9 +56,9 @@ Autor: **Erick Gabriel Hernández Rebolledo**. Proyecto académico desarrollado 
 | Git | Rama `codex/riftcalc-react-native`; commit de implementación `7cfc1d3` y commit separado de documentación; cambios ajenos en Servidor preservados |
 | GitHub | No publicado. El remoto existente corresponde a Repo7mo, no a una nueva entrega riftcalc |
 | URL GitHub de la entrega | Pendiente de publicación |
-| URL Figma | Pendiente de crear los frames en Figma |
-| Trabajo manual | Probar dispositivos, reproducir frames en Figma, publicar el repositorio y revisar registro/políticas de Riot antes de publicación |
-| Moodle | Entregar la URL pública real del repositorio publicado y el enlace real de Figma si lo exige la rúbrica. No entregar localhost |
+| URL Figma | No requerida |
+| Trabajo manual | Probar dispositivos, publicar el repositorio y revisar registro/políticas de Riot antes de publicación |
+| Moodle | Entregar la URL pública real del repositorio publicado. No entregar localhost |
 
 ## Verificación manual realizada
 

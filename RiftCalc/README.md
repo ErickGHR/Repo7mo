@@ -97,7 +97,7 @@ node --use-system-ca scripts/extract-models.mjs
 
 El actualizador consulta las versiones disponibles y **se detiene sin sobrescribir el snapshot si el último parche no coincide con los modelos revisados**. Para migrar: revisar cambios de campeones/objetos/runas, preparar los modelos del nuevo parche, actualizar `EFFECT_PATCH`, regenerar evidencia, ajustar pruebas y entonces descargar Data Dragon. Cambiar solo la etiqueta de versión no constituye una revisión. Guardados incompatibles no se cargan automáticamente.
 
-Data Dragon devolvió AD por nivel = 0 para los tres campeones del MVP. Se corrigió en el adaptador usando `damagePerLevelModifiable` del mismo parche de CommunityDragon: Ahri 3, Jinx 3.25 y Garen 4.5. También se usa su ratio de velocidad de ataque. El JSON oficial se conserva intacto. Los demás campeones sin revisión muestran aviso cuando el AD publicado es cero.
+Los 173 campeones tienen estadísticas base y crecimiento por nivel. Se verificaron AD por nivel y ratio de velocidad de ataque contra `CharacterRecords/Root` de CommunityDragon 16.19: Data Dragon entrega AD por nivel en cero. Senna conserva crecimiento AD base cero y Jhin ratio AS cero; sus pasivas no se simulan. El JSON oficial se conserva intacto. Para regenerar todos los registros: `npm run data:stats`.
 
 ## Motor de daño
 
@@ -119,7 +119,7 @@ El reloj es aproximado: 0.5 s por habilidad, intervalo `1/AS` entre ataques y du
 | Ahri | Base + crecimiento corregido + build | Q ida/regreso, W 3 fuegos, E, R por carga | Sin daño directo; curación excluida | Tipos mixtos, repetición reducida de W |
 | Jinx | Base + crecimiento corregido + build | Q cambia arma, W, E una trampa, R distancia mínima/máxima | Reinicio/AS temporal excluidos | Cohetes 110% AD; R sobre vida faltante |
 | Garen | Base + crecimiento corregido + build | Q incluye AA, W sin daño, E completa, R | Regeneración excluida | Giros por AS de nivel/objetos, objetivo cercano, reducción tras 6 giros, ejecución |
-| Otros 170 | Datos Data Dragon; aviso si AD por nivel sin corregir | Solo AA genérico | Pendiente | Modelo de daño avanzado pendiente |
+| Otros 170 | Estadísticas base verificadas; AD por nivel y ratio AS corregidos | Solo AA genérico | Pendiente | Modelo de daño avanzado pendiente |
 
 Estos son **tres modelos MVP**, no tres simulaciones completas de todas sus interacciones. Jinx no modela stacks de ametralladora ni pasiva; Garen W suma acumulaciones, pero aún no amplifica las resistencias al llegar al máximo. Los ataques se calculan sin crítico, aunque la estadística de crítico se muestra. E de Garen no aplica críticos.
 
@@ -155,9 +155,9 @@ Los fragmentos incluyen fuerza adaptable, 10% AS, 8 de aceleración y vida por n
 
 Aliado: AD/AP manuales recibidos. Campeón: condición de objetivo cercano para Garen, distancia de R para Jinx, acumulaciones defensivas de Garen. Mapa: Infernal +3% AD/AP, Montaña +5% resistencias, Hextech +5 aceleración/+5% AS por acumulación. No se calculan Océano/Nube en daño instantáneo ni Quimtech, almas, Anciano o Barón.
 
-## Figma
+## Diseño
 
-No se creó un archivo ni enlace ficticio de Figma. La integración no estaba disponible. [FIGMA-SPEC.md](design/FIGMA-SPEC.md) contiene los ocho frames, medidas, Auto Layout, variantes, estilos, constraints, estados y comportamiento adaptable para reproducirlos en Figma.
+Figma queda fuera del alcance por decisión del usuario. `design/FIGMA-SPEC.md` se conserva únicamente como referencia opcional de diseño.
 
 ## GitHub y Moodle
 
@@ -176,7 +176,7 @@ git push https://github.com/ErickGHR/riftcalc.git codex/riftcalc-export:main
 
 Comprueba primero que la cuenta autenticada sea `ErickGHR`; ajusta el propietario si tu cuenta es otra. Estos comandos son instrucciones pendientes, no acciones realizadas. El commit local de RiftCalc debe existir antes de `subtree split`.
 
-Para Moodle: entrega la **URL real del repositorio `riftcalc` después de publicarlo** y, si la rúbrica pide diseño, el enlace de Figma que crees a partir de la especificación. `localhost:8081` es una vista previa local, no un enlace accesible al profesor. El build `dist/` puede desplegarse en un hosting estático, pero aquí no se publicó ni se inventó una URL.
+Para Moodle: entrega la **URL real del repositorio `riftcalc` después de publicarlo**. `localhost:8081` es una vista previa local, no un enlace accesible al profesor. El build `dist/` puede desplegarse en un hosting estático, pero aquí no se publicó ni se inventó una URL.
 
 ## Aviso de Riot Games
 

@@ -22,7 +22,7 @@ Revisión realizada: 28–29 de septiembre de 2026. Parche de datos: 16.19.1; ex
 
 Se extrajeron `mSpell.DataValues` y `mSpellCalculations` de las habilidades principales, `mDataValues`/`mItemCalculations` de objetos y valores de `SRX_DragonBuff*`. Los arrays del cliente se indexan por rango aprendido: rango 1 usa índice 1, no índice 0. Los valores de missiles secundarios pueden ser históricos; no se usaron como fuente de daño.
 
-`models.json` y `effect-reference.json` preservan estos registros relevantes. `stat-overrides.json` registra AD por nivel y ratio AS de `CharacterRecords/Root`: DDragon publica incorrectamente crecimiento AD=0 para los tres campeones revisados. Datos complementarios no se presentan como respuesta oficial de Data Dragon.
+`models.json` y `effect-reference.json` preservan estos registros relevantes. `stat-overrides.json` registra AD por nivel y ratio AS de `CharacterRecords/Root`: se verificaron los 173 campeones del snapshot. Data Dragon entrega crecimiento AD=0; CommunityDragon aporta crecimiento para 172, mientras Senna conserva cero base. Jhin tiene ratio AS cero. Regenerar con `npm run data:stats`; no incluye pasivas ni transformaciones. Datos complementarios no se presentan como respuesta oficial de Data Dragon.
 
 ## Lógica manual
 

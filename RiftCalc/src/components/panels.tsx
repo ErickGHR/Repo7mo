@@ -93,7 +93,7 @@ export function ChampionCard({
           <Text style={{ color: colors.accent, fontSize: 11 }}>
             {supported.includes(c.id)
               ? "MODELO DE DAÑO MVP"
-              : "MODELO DE DAÑO AVANZADO PENDIENTE"}
+              : "STATS VERIFICADAS · HABILIDADES PENDIENTES"}
           </Text>
         </View>
       </View>

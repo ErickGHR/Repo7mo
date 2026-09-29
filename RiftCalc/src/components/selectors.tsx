@@ -75,7 +75,7 @@ export function ChampionSelector({
                     : colors.muted,
                 }}
               >
-                {supported.includes(c.id) ? "MODELO MVP" : "Solo AA"}
+                {supported.includes(c.id) ? "MODELO MVP" : "Stats + AA"}
               </Text>
             </Pressable>
           ))}

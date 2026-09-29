@@ -11,7 +11,8 @@
     "build": "expo export --platform web",
     "lint": "tsc --noEmit",
     "test": "tsx --test tests/*.test.ts",
-    "data:update": "node scripts/update-data.mjs"
+    "data:update": "node scripts/update-data.mjs",
+    "data:stats": "node scripts/update-champion-stats.mjs"
   },
   "dependencies": {
     "@react-native-async-storage/async-storage": "2.2.0",

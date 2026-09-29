@@ -48,12 +48,9 @@ export function calculateScenario(c: BuildConfiguration): DamageResult {
     warnings.push(
       "Modelo de daño avanzado pendiente: únicamente ataques básicos genéricos.",
     );
-  if (
-    !supported.includes(c.championId) &&
-    championById[c.championId].stats.attackdamageperlevel === 0
-  )
+  if (!supported.includes(c.championId))
     warnings.push(
-      "Data Dragon publica crecimiento AD = 0 para este campeón; sin corrección verificada. AA es una referencia genérica, no daño completo.",
+      "Estadísticas base verificadas. Pasivas, acumulaciones y transformaciones propias del campeón no incluidas.",
     );
   for (const id of c.items) {
     if (
