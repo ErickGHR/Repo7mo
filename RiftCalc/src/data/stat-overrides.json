@@ -1,0 +1,17 @@
+{
+  "patch": "16.19.1",
+  "champions": {
+    "Ahri": {
+      "attackdamageperlevel": 3,
+      "attackspeedratio": 0.625
+    },
+    "Jinx": {
+      "attackdamageperlevel": 3.25,
+      "attackspeedratio": 0.625
+    },
+    "Garen": {
+      "attackdamageperlevel": 4.5,
+      "attackspeedratio": 0.625
+    }
+  }
+}

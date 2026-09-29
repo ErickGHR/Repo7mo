@@ -1,0 +1,9 @@
+node_modules/
+.expo/
+dist/
+dist-native/
+.env*
+!.env.example
+*.log
+scripts/*-reference.json
+web-check/

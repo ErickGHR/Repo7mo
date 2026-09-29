@@ -1,0 +1,188 @@
+{
+  "patch": "16.19.1",
+  "items": {
+    "3057": {
+      "values": [
+        {
+          "mName": "SpellbladeCooldown",
+          "mValue": 1.5,
+          "__type": "ItemDataValue"
+        },
+        {
+          "mName": "Cooldown",
+          "mValue": 1.5,
+          "__type": "ItemDataValue"
+        }
+      ],
+      "calculations": {
+        "SpellbladeDamage": {
+          "mFormulaParts": [
+            {
+              "mStat": 2,
+              "mStatFormula": 1,
+              "mCoefficient": 1,
+              "__type": "StatByCoefficientCalculationPart"
+            }
+          ],
+          "__type": "GameCalculation"
+        }
+      }
+    },
+    "3089": {
+      "values": [
+        {
+          "mName": "APAmp",
+          "mValue": 0.30000001192092896,
+          "__type": "ItemDataValue"
+        }
+      ]
+    },
+    "3115": {
+      "values": [
+        {
+          "mName": "NashorsBaseValue",
+          "mValue": 15,
+          "__type": "ItemDataValue"
+        },
+        {
+          "mName": "NashorsAPValue",
+          "mValue": 0.15000000596046448,
+          "__type": "ItemDataValue"
+        }
+      ],
+      "calculations": {
+        "TotalOnHitDamage": {
+          "DamageType": 1,
+          "mFormulaParts": [
+            {
+              "mDataValue": "NashorsBaseValue",
+              "__type": "NamedDataValueCalculationPart"
+            },
+            {
+              "mDataValue": "NashorsAPValue",
+              "__type": "StatByNamedDataValueCalculationPart"
+            }
+          ],
+          "__type": "GameCalculation"
+        }
+      }
+    },
+    "6655": {
+      "values": [
+        {
+          "mName": "Cooldown",
+          "mValue": 12,
+          "__type": "ItemDataValue"
+        },
+        {
+          "mName": "BaseDamage",
+          "mValue": 75,
+          "__type": "ItemDataValue"
+        },
+        {
+          "mName": "APRatio",
+          "mValue": 0.05000000074505806,
+          "__type": "ItemDataValue"
+        },
+        {
+          "mName": "MaxCharges",
+          "mValue": 6,
+          "__type": "ItemDataValue"
+        },
+        {
+          "mName": "RepeatDamageReduction",
+          "mValue": 0.20000000298023224,
+          "__type": "ItemDataValue"
+        },
+        {
+          "mName": "MissileRange",
+          "mValue": 650,
+          "__type": "ItemDataValue"
+        }
+      ],
+      "calculations": {
+        "Damage": {
+          "mFormulaParts": [
+            {
+              "mDataValue": "BaseDamage",
+              "__type": "NamedDataValueCalculationPart"
+            },
+            {
+              "mDataValue": "APRatio",
+              "__type": "StatByNamedDataValueCalculationPart"
+            }
+          ],
+          "__type": "GameCalculation"
+        },
+        "SingleTargetMax": {
+          "mMultiplier": {
+            "mNumber": 2,
+            "__type": "NumberCalculationPart"
+          },
+          "mModifiedGameCalculation": "Damage",
+          "__type": "GameCalculationModified"
+        }
+      }
+    }
+  },
+  "dragons": {
+    "Infernal": [
+      {
+        "name": "ADandAPPercentIncrease",
+        "values": [
+          0.029999999329447746,
+          0.029999999329447746,
+          0.029999999329447746,
+          0.029999999329447746,
+          0.029999999329447746,
+          0.029999999329447746,
+          0.029999999329447746
+        ],
+        "__type": "SpellDataValue"
+      }
+    ],
+    "Mountain": [
+      {
+        "name": "BonusDefenses",
+        "values": [
+          0.05000000074505806,
+          0.05000000074505806,
+          0.05000000074505806,
+          0.05000000074505806,
+          0.05000000074505806,
+          0.05000000074505806,
+          0.05000000074505806
+        ],
+        "__type": "SpellDataValue"
+      }
+    ],
+    "Hextech": [
+      {
+        "name": "AbilityHaste",
+        "values": [
+          5,
+          5,
+          5,
+          5,
+          5,
+          5,
+          5
+        ],
+        "__type": "SpellDataValue"
+      },
+      {
+        "name": "AttackSpeed",
+        "values": [
+          0.05000000074505806,
+          0.05000000074505806,
+          0.05000000074505806,
+          0.05000000074505806,
+          0.05000000074505806,
+          0.05000000074505806,
+          0.05000000074505806
+        ],
+        "__type": "SpellDataValue"
+      }
+    ]
+  }
+}
