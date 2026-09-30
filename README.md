@@ -1,4 +1,13 @@
-# Índice de proyectos
+# Actividad 4: Ejercicios prácticos
+
+## Presentación
+
+- **Alumno:** Erick Gabriel Hernández Rebolledo
+- **Docente:** Jorge Estudillo Ramirez
+- **Universidad:** Universidad Cristóbal Colón
+- **Fecha:** martes, 29 de septiembre de 2026
+
+## Índice de proyectos
 
 Repositorio de ejercicios y proyectos desarrollados durante el curso con JavaScript, React Native, Expo, Node.js y MongoDB.
 
@@ -32,3 +41,7 @@ npm start
 ```
 
 Los proyectos que requieren configuración adicional incluyen instrucciones en su propio archivo `README.md`.
+
+## Conclusión
+
+Con estos proyectos aprendí bastante sobre cómo crear aplicaciones y organizar mejor mi trabajo. Al principio algunas cosas se me hicieron complicadas, pero con cada ejercicio fui entendiendo mejor cómo hacer las pantallas, agregar funciones y conectar las diferentes partes de una aplicación. También aprendí que revisar los errores y seguir intentando es parte del proceso. En general, estas prácticas me ayudaron a tener más confianza y a darme cuenta de todo lo que puedo hacer con lo que vimos en clase.
