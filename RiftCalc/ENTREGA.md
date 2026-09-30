@@ -25,7 +25,7 @@ Autor: **Erick Gabriel Hernández Rebolledo**. Proyecto académico desarrollado 
 - [x] Especificación de ocho frames de Figma en `design/FIGMA-SPEC.md`.
 - [x] Figma retirado del alcance a petición del usuario.
 - [x] README, fuentes, limitaciones y aviso oficial de Riot.
-- [x] 34 pruebas del motor aprobadas.
+- [x] 42 pruebas del motor aprobadas.
 - [x] TypeScript estricto aprobado (`npm run lint`).
 - [x] `npm run build`: exportación web correcta.
 - [x] Exportaciones de bundles Android e iOS correctas.
@@ -45,13 +45,13 @@ Autor: **Erick Gabriel Hernández Rebolledo**. Proyecto académico desarrollado 
 | Fuentes | Data Dragon oficial es_MX; CommunityDragon 16.19 para fórmulas y correcciones verificadas |
 | Parche | 16.19.1, seleccionado mediante consulta de versiones; snapshot reproducible |
 | Campeones con estadísticas base | 173; crecimiento AD y ratio AS verificados |
-| Campeones con motor | Ahri, Jinx y Garen: modelos MVP de habilidades; ninguno reproduce todas las interacciones del juego |
+| Campeones con motor | Ahri, Jinx, Garen, Lux, Jayce y Elise: modelos parciales; ninguno reproduce todas las interacciones del juego |
 | Objetos | 215 en catálogo; estadísticas reconocidas. Efectos/estadísticas especiales de Nashor, Luden, Brillo, Rabadon, Vacío y Botas del Hechicero |
 | Runas | 62 visuales; Electrocutar, Tormenta Creciente, Concentración Absoluta y Golpe de Gracia calculadas |
 | Buffs | AD/AP de aliado manuales, Garen objetivo cercano y acumulaciones W, Jinx distancia R, procs de objetos y condiciones de runas |
 | Dragones | Infernal, Montaña, Hextech. Sin almas, Anciano, Barón o Quimtech |
 | Fórmulas | Crecimiento no lineal; AP, AD y bonus AD; penetración y resistencias; vida faltante; on-hit/on-spell; reducción de armadura; escudos |
-| Pruebas | 31 unitarias; TypeScript; export web/nativa; recorridos funcionales en navegador |
+| Pruebas | 42 unitarias; TypeScript; export web/nativa; recorridos funcionales en navegador |
 | Limitaciones | Sin críticos, simulación real de DPS, todas las pasivas, maná, enfriamientos de habilidades ni QA nativo en dispositivo |
 | Git | Rama `codex/riftcalc-react-native`; commit de implementación `7cfc1d3` y commit separado de documentación; cambios ajenos en Servidor preservados |
 | GitHub | No publicado. El remoto existente corresponde a Repo7mo, no a una nueva entrega riftcalc |

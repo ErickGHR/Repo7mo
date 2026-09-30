@@ -15,6 +15,8 @@ import {
   supportedRunes,
   championById,
 } from "../data/catalog";
+import { createMechanics, advancedChampions } from "./champion-mechanics";
+import { abilityPatch } from "../data/abilities";
 import models from "../data/models.json";
 import { EFFECT_PATCH, itemEffects, modeledItems } from "./effects";
 import { validateConfiguration } from "./validation";
@@ -41,14 +43,16 @@ export function calculateScenario(c: BuildConfiguration): DamageResult {
       "Vida y escudo consumidos en orden",
     ];
   const modelAvailable =
-    supported.includes(c.championId) &&
+    (supported.includes(c.championId) ||
+      advancedChampions.includes(c.championId)) &&
+    c.patch === abilityPatch &&
     c.patch === models.patch &&
     c.patch === EFFECT_PATCH;
   if (!modelAvailable)
     warnings.push(
       "Modelo de daño avanzado pendiente: únicamente ataques básicos genéricos.",
     );
-  if (!supported.includes(c.championId))
+  if (!modelAvailable)
     warnings.push(
       "Estadísticas base verificadas. Pasivas, acumulaciones y transformaciones propias del campeón no incluidas.",
     );
@@ -80,7 +84,7 @@ export function calculateScenario(c: BuildConfiguration): DamageResult {
     );
   if (modelAvailable)
     included.push(
-      "Habilidades del modelo MVP; coeficientes de CommunityDragon del mismo parche",
+      "Habilidades del modelo de combate; coeficientes de CommunityDragon del mismo parche",
     );
   if (s.crit > 0)
     warnings.push("Los golpes críticos no se simulan: ataques sin crítico.");
@@ -119,7 +123,13 @@ export function calculateScenario(c: BuildConfiguration): DamageResult {
             state.armorReduction,
           )
         : type === "magic"
-          ? applyPenetration(c.target.mr, s.magicPenPercent, s.magicPen)
+          ? applyPenetration(
+              c.target.mr,
+              s.magicPenPercent,
+              s.magicPen,
+              0,
+              state.magicReduction ?? 0,
+            )
           : 0;
     const amp =
       type !== "true" &&
@@ -186,6 +196,17 @@ export function calculateScenario(c: BuildConfiguration): DamageResult {
       }
     }
   };
+  const mechanics = modelAvailable
+    ? createMechanics({
+        config: c,
+        stats: s,
+        state,
+        emit,
+        onHit,
+        included,
+        warnings,
+      })
+    : null;
   let firstHitTime: number | null = null,
     hitCount = 0;
   for (const action of c.actions) {
@@ -205,8 +226,15 @@ export function calculateScenario(c: BuildConfiguration): DamageResult {
       state.triggeredEffects.add("spellblade-ready");
       state.cooldowns["spellblade-until"] = state.elapsedTime + 10;
     }
+    mechanics?.prepare();
     const before = sources.length;
-    if (action === "AA") {
+    if (
+      mechanics &&
+      (action === "AA" || c.ranks[action] > 0) &&
+      mechanics.act(action)
+    ) {
+      // The champion module emitted the ordered impacts and state changes.
+    } else if (action === "AA") {
       emit(
         "Ataque básico",
         "physical",

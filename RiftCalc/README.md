@@ -119,9 +119,12 @@ El reloj es aproximado: 0.5 s por habilidad, intervalo `1/AS` entre ataques y du
 | Ahri | Base + crecimiento corregido + build | Q ida/regreso, W 3 fuegos, E, R por carga | Sin daño directo; curación excluida | Tipos mixtos, repetición reducida de W |
 | Jinx | Base + crecimiento corregido + build | Q cambia arma, W, E una trampa, R distancia mínima/máxima | Reinicio/AS temporal excluidos | Cohetes 110% AD; R sobre vida faltante |
 | Garen | Base + crecimiento corregido + build | Q incluye AA, W sin daño, E completa, R | Regeneración excluida | Giros por AS de nivel/objetos, objetivo cercano, reducción tras 6 giros, ejecución |
-| Otros 170 | Estadísticas base verificadas; AD por nivel y ratio AS corregidos | Solo AA genérico | Pendiente | Modelo de daño avanzado pendiente |
+| Lux | Base + build | Q/E/R, escudo W informado | Marca consumida por AA y detonada/renovada por R | Duración de marca |
+| Jayce | Resistencias según forma + build | Ambos kits, portal E→Q, tres AA de Hipercarga | Primer AA después de R | Cambios de forma en secuencia, rangos de 6 puntos, R gratuita |
+| Elise | Base + build, AS temporal de W | Ambos kits, Q con vida actual/faltante | Daño/curación por impacto en forma arácnida | R alterna formas; E arácnida amplifica pasiva; arañitas pendientes |
+| Otros 167 | Estadísticas base verificadas | Catálogo y explorador numérico; combo solo AA | Referencia disponible; automatización pendiente | Modelo de combate pendiente |
 
-Estos son **tres modelos MVP**, no tres simulaciones completas de todas sus interacciones. Jinx no modela stacks de ametralladora ni pasiva; Garen W suma acumulaciones, pero aún no amplifica las resistencias al llegar al máximo. Los ataques se calculan sin crítico, aunque la estadística de crítico se muestra. E de Garen no aplica críticos.
+Estos son **seis modelos parciales**, no simulaciones completas de todas sus interacciones. Jinx no modela stacks de ametralladora ni pasiva; Garen W suma acumulaciones, pero aún no amplifica las resistencias al llegar al máximo. Los ataques se calculan sin crítico, aunque la estadística de crítico se muestra. E de Garen no aplica críticos.
 
 ## Objetos implementados
 
@@ -189,3 +192,13 @@ Antes de publicar, revisar nuevamente esas políticas, los [términos de API](ht
 ## Autor
 
 **Erick Gabriel Hernández Rebolledo** · Proyecto académico.
+
+## Ampliación de habilidades (en curso)
+
+La interfaz muestra las cuatro habilidades y la pasiva de los 173 campeones, con 984 registros de habilidades y variantes. El explorador evalúa componentes numéricos usando nivel, rango y build. No infiere tipos de daño, activaciones ni transformaciones a partir del nombre de una fórmula. Un porcentaje o un escudo no se suma como daño al combo.
+
+`npm run data:abilities` descarga los datos del mismo parche y genera el catálogo. Reutiliza archivos JSON válidos de `scripts/ability-cache/`; esa caché no se versiona. `npm run data:audit` genera [la cobertura por campeón](design/COBERTURA-HABILIDADES.md). El catálogo preserva un hash SHA-256 del registro fuente de cada campeón.
+
+La auditoría puede evaluar 1800 de 2020 expresiones en su escenario de referencia. **Esto no significa 173 modelos de combate completos**: quedan 167 campeones sin automatización del kit, además de interacciones pendientes en los seis modelos parciales. Las operaciones desconocidas y acumulaciones sin contexto muestran un motivo explícito. Aphelios y las habilidades copiadas de Sylas/Viego todavía requieren reglas propias, al igual que las transformaciones distintas de Jayce/Elise.
+
+El [registro de trabajo](PROGRESO.md) permite retomar esta ampliación tras una desconexión.

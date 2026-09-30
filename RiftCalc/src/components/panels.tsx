@@ -17,6 +17,7 @@ import {
   strip,
   supported,
 } from "../data/catalog";
+import { advancedChampions } from "../engine/champion-mechanics";
 import { maxRank } from "../engine/validation";
 import {
   Button,
@@ -91,9 +92,9 @@ export function ChampionCard({
           </Text>
           <Label>{c.title}</Label>
           <Text style={{ color: colors.accent, fontSize: 11 }}>
-            {supported.includes(c.id)
-              ? "MODELO DE DAÑO MVP"
-              : "STATS VERIFICADAS · HABILIDADES PENDIENTES"}
+            {supported.includes(c.id) || advancedChampions.includes(c.id)
+              ? "MODELO DE COMBATE PARCIAL"
+              : "CATÁLOGO COMPLETO · COMBATE PENDIENTE"}
           </Text>
         </View>
       </View>
@@ -169,97 +170,7 @@ export function AbilityLevelSelector({
     </View>
   );
 }
-const formulaNotes: Record<string, string[]> = {
-  Ahri: [
-    "Mágico + verdadero · 35–135 + 50% AP por trayecto",
-    "Mágico · 40–120 + 40% AP; repeticiones al 40%",
-    "Mágico · 80–240 + 85% AP",
-    "Mágico · 75–175 + 35% AP por desplazamiento",
-  ],
-  Jinx: [
-    "Cambia de arma · cohetes: 110% AD por AA",
-    "Físico · 10–210 + 140% AD",
-    "Mágico · 90–290 + 100% AP",
-    "Físico · 20–50 a 200–500 + AD adicional + vida faltante",
-  ],
-  Garen: [
-    "Físico · 30–150 + 150% AD; incluye el ataque",
-    "Defensiva · no inflige daño",
-    "Físico · 4–16 + 40–52% AD por giro",
-    "Verdadero · 125–275 + 25–35% vida faltante",
-  ],
-};
-export function AbilityCard({
-  config,
-  onRank,
-}: {
-  config: BuildConfiguration;
-  onRank: (a: AbilityKey, n: number) => void;
-}) {
-  const d = details[config.championId as keyof typeof details];
-  return (
-    <Card title="Habilidades" kicker="PUNTOS Y ESCALADOS" collapsible>
-      {d ? (
-        <>
-          <View style={styles.row}>
-            <SafeIcon
-              name={d.passive.name}
-              uri={asset("passive", d.passive.image.full)}
-              size={36}
-            />
-            <View style={{ flex: 1 }}>
-              <Text style={styles.text}>P · {d.passive.name}</Text>
-              <Label>
-                Sin daño directo. Curación, reinicios y velocidad temporal fuera
-                del modelo.
-              </Label>
-            </View>
-          </View>
-          {d.spells.map((a, i) => {
-            const key = (["Q", "W", "E", "R"] as AbilityKey[])[i];
-            return (
-              <View
-                key={key}
-                style={{
-                  gap: 10,
-                  paddingTop: 12,
-                  borderTopWidth: 1,
-                  borderTopColor: colors.border,
-                }}
-              >
-                <View style={styles.row}>
-                  <SafeIcon
-                    name={a.name}
-                    uri={asset("spell", a.image.full)}
-                    size={36}
-                  />
-                  <View style={{ flex: 1 }}>
-                    <Text style={styles.text}>
-                      {key} · {a.name}
-                    </Text>
-                    <Label>{formulaNotes[config.championId][i]}</Label>
-                  </View>
-                </View>
-                <AbilityLevelSelector
-                  ability={key}
-                  rank={config.ranks[key]}
-                  level={config.level}
-                  spent={Object.values(config.ranks).reduce((a, b) => a + b, 0)}
-                  onChange={(n) => onRank(key, n)}
-                />
-              </View>
-            );
-          })}
-        </>
-      ) : (
-        <Label>
-          Modelo de daño avanzado pendiente. Puedes calcular un ataque básico y
-          configurar estadísticas.
-        </Label>
-      )}
-    </Card>
-  );
-}
+export { AbilityCard } from "./ability-card";
 export function ItemSlot({
   id,
   index,

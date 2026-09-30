@@ -39,3 +39,11 @@ No hay backend, Riot API keys, historial de partidas ni datos de jugadores. No s
 ## Política y licencia de assets
 
 El aviso visible de la aplicación y README procede de [General Policies](https://support-developer.riotgames.com/hc/en-us/articles/22698591841939-General-Policies), consultado durante el desarrollo. El uso de los assets no confiere propiedad ni aprobación de Riot. Revisar [API Terms](https://developer.riotgames.com/terms) y [Legal](https://www.riotgames.com/en/legal) antes de publicar.
+
+## Catálogo de habilidades 16.19.1
+
+- Data Dragon: `https://ddragon.leagueoflegends.com/cdn/16.19.1/data/es_MX/champion/{id}.json`, nombres/descripciones/iconos de los 173 kits.
+- CommunityDragon: `https://raw.communitydragon.org/16.19/game/data/characters/{id}/{id}.bin.json`, `CharacterRecords/Root.spells`, `mCharacterPassiveSpell`, `DataValues` y `mSpellCalculations`.
+- `abilities.json`: registros seleccionados y SHA-256 del JSON original por campeón. Las expresiones de tooltip son evidencia numérica; no describen todas las reglas de ejecución del juego.
+- `champion-mechanics.ts`: modelos parciales explícitos de Lux, Jayce y Elise. Cada impacto identifica la fórmula fuente. En Elise no se simulan arañitas; en Jayce W de martillo se resuelve como canalización completa; no hay combate entrante.
+- `COBERTURA-HABILIDADES.md`: auditoría reproducible, con dependencias no interpretadas y distinción entre expresiones evaluables y modelos de combate.

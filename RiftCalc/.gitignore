@@ -7,3 +7,4 @@ dist-native/
 *.log
 scripts/*-reference.json
 web-check/
+scripts/ability-cache/

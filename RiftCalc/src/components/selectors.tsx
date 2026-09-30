@@ -11,6 +11,7 @@ import {
   strip,
 } from "../data/catalog";
 import { Champion, Item, Rune } from "../engine/types";
+import { advancedChampions } from "../engine/champion-mechanics";
 import { modeledItems } from "../engine/effects";
 import {
   Button,
@@ -45,7 +46,9 @@ export function ChampionSelector({
         onChange={setSearch}
         placeholder="Buscar entre 173 campeones…"
       />
-      <Label>Modelos avanzados: Ahri · Jinx · Garen</Label>
+      <Label>
+        Combate parcial: {[...supported, ...advancedChampions].join(" · ")}
+      </Label>
       <ScrollView keyboardShouldPersistTaps="handled">
         <View style={[styles.row, { alignItems: "stretch" }]}>
           {list.map((c) => (
@@ -75,7 +78,9 @@ export function ChampionSelector({
                     : colors.muted,
                 }}
               >
-                {supported.includes(c.id) ? "MODELO MVP" : "Stats + AA"}
+                {supported.includes(c.id) || advancedChampions.includes(c.id)
+                  ? "COMBATE PARCIAL"
+                  : "Catálogo + AA"}
               </Text>
             </Pressable>
           ))}

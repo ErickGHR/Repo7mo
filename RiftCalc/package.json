@@ -12,7 +12,9 @@
     "lint": "tsc --noEmit",
     "test": "tsx --test tests/*.test.ts",
     "data:update": "node scripts/update-data.mjs",
-    "data:stats": "node scripts/update-champion-stats.mjs"
+    "data:stats": "node scripts/update-champion-stats.mjs",
+    "data:abilities": "node scripts/fetch-abilities.mjs && node scripts/import-abilities.mjs",
+    "data:audit": "tsx scripts/audit-abilities.ts"
   },
   "dependencies": {
     "@react-native-async-storage/async-storage": "2.2.0",

@@ -1,23 +1,42 @@
 import { AbilityKey, BuildConfiguration } from "./types";
 import { championById, itemById, patch, runes } from "../data/catalog";
-export const maxRank = (key: AbilityKey, level: number) =>
-  key === "R"
-    ? level >= 16
-      ? 3
-      : level >= 11
-        ? 2
-        : level >= 6
-          ? 1
-          : 0
-    : Math.min(5, Math.ceil(level / 2));
+export const maxRank = (key: AbilityKey, level: number, championId?: string) =>
+  championId === "Jayce"
+    ? key === "R"
+      ? 1
+      : Math.min(6, Math.ceil(level / 2))
+    : ["Elise", "Nidalee", "Karma"].includes(championId || "") && key === "R"
+      ? 1 + (level >= 6 ? 1 : 0) + (level >= 11 ? 1 : 0) + (level >= 16 ? 1 : 0)
+      : championId === "Udyr"
+        ? Math.min(level >= 16 ? 6 : 5, Math.ceil(level / 2))
+        : key === "R"
+          ? level >= 16
+            ? 3
+            : level >= 11
+              ? 2
+              : level >= 6
+                ? 1
+                : 0
+          : Math.min(5, Math.ceil(level / 2));
 export function normalizeRanks(
   ranks: BuildConfiguration["ranks"],
   level: number,
+  championId?: string,
 ) {
   const r = { ...ranks };
-  let remaining = level;
+  const freeR = ["Jayce", "Elise", "Nidalee", "Karma"].includes(
+    championId || "",
+  )
+    ? 1
+    : 0;
+  r.R = Math.max(freeR, r.R);
+  let remaining = level + freeR;
   for (const k of ["R", "Q", "W", "E"] as AbilityKey[]) {
-    r[k] = Math.min(Math.max(0, r[k]), maxRank(k, level), remaining);
+    r[k] = Math.min(
+      Math.max(0, r[k]),
+      maxRank(k, level, championId),
+      remaining,
+    );
     remaining -= r[k];
   }
   return r;
@@ -36,11 +55,15 @@ export function validateConfiguration(c: BuildConfiguration): string[] {
   if (!finite(c.minute, 0, 180)) errors.push("Minuto inválido.");
   if (
     !c.ranks ||
-    Object.values(c.ranks).reduce((a, b) => a + b, 0) > c.level ||
+    Object.values(c.ranks).reduce((a, b) => a + b, 0) >
+      c.level +
+        (["Jayce", "Elise", "Nidalee", "Karma"].includes(c.championId)
+          ? 1
+          : 0) ||
     (["Q", "W", "E", "R"] as AbilityKey[]).some(
       (k) =>
         !Number.isInteger(c.ranks[k]) ||
-        !finite(c.ranks[k], 0, maxRank(k, c.level)),
+        !finite(c.ranks[k], 0, maxRank(k, c.level, c.championId)),
     )
   )
     errors.push("Distribución de habilidades inválida.");
@@ -80,6 +103,16 @@ export function validateConfiguration(c: BuildConfiguration): string[] {
     )
   )
     errors.push("Fragmentos inválidos.");
+  if (
+    ["Jayce", "Elise", "Nidalee", "Karma"].includes(c.championId) &&
+    c.ranks?.R < 1
+  )
+    errors.push("Este campeón comienza con R desbloqueada.");
+  if (
+    c.mechanics !== undefined &&
+    (!c.mechanics || typeof c.mechanics.alternateForm !== "boolean")
+  )
+    errors.push("Estado de transformación inválido.");
   const t = c.target;
   if (
     !t ||

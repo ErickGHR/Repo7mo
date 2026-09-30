@@ -74,6 +74,7 @@ export interface Buffs {
   garenStacks: number;
 }
 export interface BuildConfiguration {
+  mechanics?: { alternateForm: boolean };
   schema: 1;
   patch: string;
   championId: string;
@@ -104,6 +105,7 @@ export interface CombatState {
   shield: number;
   elapsedTime: number;
   armorReduction: number;
+  magicReduction?: number;
   stacks: Record<string, number>;
   triggeredEffects: Set<string>;
   cooldowns: Record<string, number>;

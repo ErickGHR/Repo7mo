@@ -306,7 +306,11 @@ export default function App() {
                   onChange={(level) =>
                     update({
                       level,
-                      ranks: normalizeRanks(config.ranks, level),
+                      ranks: normalizeRanks(
+                        config.ranks,
+                        level,
+                        config.championId,
+                      ),
                     })
                   }
                 />
@@ -371,6 +375,7 @@ export default function App() {
               </Card>
               <AbilityCard
                 config={config}
+                onMechanics={(mechanics) => update({ mechanics })}
                 onRank={(a, n) =>
                   update({ ranks: { ...config.ranks, [a]: n } })
                 }
@@ -600,6 +605,8 @@ export default function App() {
             ? targetPreset(c)
             : update({
                 championId: c.id,
+                ranks: normalizeRanks(config.ranks, config.level, c.id),
+                mechanics: { alternateForm: false },
                 name: `${c.name} · Nivel ${config.level}`,
                 actions: ["AA"],
               })
