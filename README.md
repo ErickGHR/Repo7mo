@@ -31,17 +31,11 @@ Repositorio de ejercicios y proyectos desarrollados durante el curso con JavaScr
 | [TabNavigation](./TabNavigation/) | Navegación por pestañas entre inicio, búsqueda y perfil. |
 | [VidaVida](./VidaVida/) | Aplicación móvil con pantalla de inicio y navegación lateral. |
 
-## Ejecución general
-
-Cada proyecto se encuentra en su propia carpeta. En los proyectos de Expo o Node.js, instala las dependencias desde la carpeta correspondiente:
-
-```bash
-npm install
-npm start
-```
-
-Los proyectos que requieren configuración adicional incluyen instrucciones en su propio archivo `README.md`.
 
 ## Conclusión
 
 Con estos proyectos aprendí bastante sobre cómo crear aplicaciones y organizar mejor mi trabajo. Al principio algunas cosas se me hicieron complicadas, pero con cada ejercicio fui entendiendo mejor cómo hacer las pantallas, agregar funciones y conectar las diferentes partes de una aplicación. También aprendí que revisar los errores y seguir intentando es parte del proceso. En general, estas prácticas me ayudaron a tener más confianza y a darme cuenta de todo lo que puedo hacer con lo que vimos en clase.
+
+
+## Enlace de vídeo
+https://drive.google.com/drive/folders/14u626b4az5jaTz_0wM-d1qWYegUuA3ZF?usp=sharing
