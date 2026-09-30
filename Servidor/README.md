@@ -19,7 +19,9 @@ Si `.env` ya existe y está configurado, conserva ese archivo.
 npm start
 ```
 
-El servidor escucha en el puerto 3000 después de conectarse a MongoDB.
+El servidor escucha en el puerto 3000 inmediatamente. La conexión con MongoDB se
+valida al iniciar sesión o al consultar `/health`, por lo que una interrupción de
+Atlas no impide arrancar la API.
 `npm run dev` reinicia automáticamente al editar el código.
 
 ## Configuración

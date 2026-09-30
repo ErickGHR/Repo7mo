@@ -22,15 +22,14 @@ async function startServer() {
 
     const client = new MongoClient(uri, { serverSelectionTimeoutMS: 10000 });
     try {
-        await client.connect();
         const db = client.db(process.env.MONGODB_DB || 'sample_mflix');
-        await db.command({ ping: 1 });
         const app = createApp(db, { authenticate: createAtlasAuthenticator(uri, db.databaseName) });
         const server = await new Promise((resolve, reject) => {
             const listener = app.listen(port, '0.0.0.0', () => resolve(listener));
             listener.once('error', reject);
         });
-        console.log(`Conectado a MongoDB. Servidor disponible en http://localhost:${port}`);
+        console.log(`Servidor disponible en http://localhost:${port}`);
+        console.log('MongoDB se validará al iniciar sesión o consultar /health.');
 
         let closing = false;
         function shutdown() {

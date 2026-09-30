@@ -2,6 +2,7 @@ const { test } = require('node:test');
 const assert = require('node:assert/strict');
 const { ObjectId } = require('mongodb');
 const { createApp } = require('../app');
+const { startServer } = require('../server');
 
 async function listen(t, db, options = {}) {
     const server = createApp(db, { authenticate: async (user, password) => {
@@ -109,4 +110,8 @@ test('distingue fallos de red y falta de permisos de una contraseña incorrecta'
         assert.equal(response.status, status);
         assert.ok(!(await response.text()).includes('privado'));
     }
+});
+
+test('el módulo del servidor puede cargarse sin conectarse inmediatamente a Atlas', () => {
+    assert.equal(typeof startServer, 'function');
 });
