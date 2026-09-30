@@ -5,8 +5,18 @@
     "version": "1.0.0",
     "orientation": "default",
     "userInterfaceStyle": "dark",
-    "web": { "bundler": "metro", "name": "RiftCalc · Damage Lab" },
-    "android": { "package": "com.erickghr.riftcalc" },
-    "ios": { "bundleIdentifier": "com.erickghr.riftcalc" }
+    "web": {
+      "bundler": "metro",
+      "name": "RiftCalc · Damage Lab"
+    },
+    "android": {
+      "package": "com.erickghr.riftcalc"
+    },
+    "ios": {
+      "bundleIdentifier": "com.erickghr.riftcalc"
+    },
+    "plugins": [
+      "expo-status-bar"
+    ]
   }
 }

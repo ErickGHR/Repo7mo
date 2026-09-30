@@ -1,6 +1,6 @@
 # Entrega — RiftCalc
 
-Autor: **Erick Gabriel Hernández Rebolledo**. Proyecto académico desarrollado íntegramente con componentes React Native, Expo 54 y TypeScript. Web mediante React Native Web.
+Autor: **Erick Gabriel Hernández Rebolledo**. Proyecto académico desarrollado íntegramente con componentes React Native, Expo SDK 57 y TypeScript. Web mediante React Native Web.
 
 ## Checklist
 
@@ -39,7 +39,7 @@ Autor: **Erick Gabriel Hernández Rebolledo**. Proyecto académico desarrollado 
 | Punto | Estado |
 |---|---|
 | Nombre | RiftCalc — League Damage Lab |
-| Arquitectura | React Native + Expo + TypeScript; motor puro, adaptador de datos, componentes y persistencia separados |
+| Arquitectura | React Native + Expo SDK 57 + TypeScript; motor puro, adaptador de datos, componentes y persistencia separados |
 | Interfaz | Pantalla principal con tres columnas en escritorio y secciones verticales en móvil; selectores en modales |
 | Figma | Fuera del alcance; especificación archivada como referencia opcional |
 | Fuentes | Data Dragon oficial es_MX; CommunityDragon 16.19 para fórmulas y correcciones verificadas |
@@ -51,7 +51,7 @@ Autor: **Erick Gabriel Hernández Rebolledo**. Proyecto académico desarrollado 
 | Buffs | AD/AP de aliado manuales, Garen objetivo cercano y acumulaciones W, Jinx distancia R, procs de objetos y condiciones de runas |
 | Dragones | Infernal, Montaña, Hextech. Sin almas, Anciano, Barón o Quimtech |
 | Fórmulas | Crecimiento no lineal; AP, AD y bonus AD; penetración y resistencias; vida faltante; on-hit/on-spell; reducción de armadura; escudos |
-| Pruebas | 42 unitarias; TypeScript; export web/nativa; recorridos funcionales en navegador |
+| Pruebas | 42 unitarias; TypeScript; export web/nativa; Expo Go SDK 57 para iPhone |
 | Limitaciones | Sin críticos, simulación real de DPS, todas las pasivas, maná, enfriamientos de habilidades ni QA nativo en dispositivo |
 | Git | Rama `codex/riftcalc-react-native`; commit de implementación `7cfc1d3` y commit separado de documentación; cambios ajenos en Servidor preservados |
 | GitHub | No publicado. El remoto existente corresponde a Repo7mo, no a una nueva entrega riftcalc |

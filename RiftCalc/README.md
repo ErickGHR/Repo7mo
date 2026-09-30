@@ -1,6 +1,6 @@
 # RiftCalc
 
-Calculadora académica de daño de League of Legends, desarrollada con **React Native + Expo + TypeScript**. Configura un campeón, nivel, objetos, runas, buffs y objetivo para estimar ataques, habilidades y combos. Una misma interfaz funciona en Android, iOS y web mediante React Native Web; no utiliza Vite ni componentes HTML para la interfaz.
+Calculadora académica de daño de League of Legends, desarrollada con **React Native + Expo + TypeScript**. Configura un campeón, nivel, objetos, runas, buffs y objetivo para estimar ataques, habilidades y combos. La interfaz móvil usa React Native; la versión web usa React Native Web.
 
 ## Objetivo
 
@@ -8,7 +8,7 @@ Hacer visible cómo cada estadística y resistencia modifica el daño. La aplica
 
 ## Instalación y ejecución
 
-Requiere Node.js 20.19 o posterior y npm.
+Requiere Node.js 20.19 o posterior y npm. El proyecto usa Expo SDK 57.
 
 ```sh
 cd RiftCalc
@@ -16,7 +16,7 @@ npm install
 npm run dev
 ```
 
-Para Expo Go compatible con SDK 54 o un development build:
+Expo SDK 57 con React Native 0.86.3, React 19.2.3 y Expo Go compatible con SDK 57. Para abrirlo en un iPhone conectado a la misma Wi-Fi, desde la carpeta del proyecto ejecuta `npm start` y escanea el QR con la cámara. Este comando inicia Expo Go por LAN (`expo start --go --lan`). La terminal debe permanecer abierta. Para vista web usa `npm run dev`.
 
 ```sh
 npm start
