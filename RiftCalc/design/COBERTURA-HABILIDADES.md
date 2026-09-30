@@ -4,12 +4,14 @@
 
 1800/2020 expresiones numéricas se pueden evaluar en el escenario de auditoría (nivel 11, rango 1, sin objetos ni acumulaciones). Esto **no equivale** a habilidades simuladas ni verifica todas las combinaciones de nivel, rangos y estados. Los cálculos de tooltip no contienen por sí solos reglas de activación, temporización, formas o selección de objetivo.
 
-Modelos automáticos parciales: Ahri, Jinx, Garen, Lux, Jayce, Elise. Falta conectar y verificar los otros 167 campeones y completar las pasivas/transformaciones no cubiertas.
+Modelos automáticos de daño a un objetivo: Ahri, Jinx, Garen, Lux, Jayce, Elise. En estos seis se calculan Q/W/E/R, ataques, efectos de pasiva que cambian el daño/ataque y formas. Las utilidades sin efecto sobre daño saliente (curación propia, daño entrante y movilidad), eventos de baja con varios objetivos y efectos especiales de objetos se identifican aparte.
+
+Los otros 167 campeones siguen pendientes; tener sus descripciones y expresiones numéricas no cuenta como simulación.
 
 | Campeón | Expresiones | Evaluables en auditoría | Combate automático | Dependencias pendientes |
 |---|---:|---:|---|---|
 | Aatrox | 8 | 8 | Pendiente |  |
-| Ahri | 7 | 7 | Parcial |  |
+| Ahri | 7 | 7 | Kit modelado (objetivo único) |  |
 | Akali | 21 | 20 | Pendiente | Operación pendiente de interpretar: {4ce08984} |
 | Akshan | 15 | 10 | Pendiente | Estadística no interpretada: 9:0 |
 | Alistar | 6 | 6 | Pendiente |  |
@@ -38,7 +40,7 @@ Modelos automáticos parciales: Ahri, Jinx, Garen, Lux, Jayce, Elise. Falta cone
 | Dr. Mundo | 10 | 10 | Pendiente |  |
 | Draven | 6 | 3 | Pendiente | Valor ausente o inválido: acumulaciones DravenPassiveGoldEarned; Valor ausente o inválido: acumulaciones DravenPassiveHighestBounty; Valor ausente o inválido: acumulaciones {577427b5} |
 | Ekko | 11 | 10 | Pendiente | La fórmula necesita estadísticas de otra unidad |
-| Elise | 13 | 10 | Parcial | Operación pendiente de interpretar: GameCalculationConditional; Operación pendiente de interpretar: {9e9e2e5c} |
+| Elise | 13 | 10 | Kit modelado (objetivo único) | Operación pendiente de interpretar: GameCalculationConditional; Operación pendiente de interpretar: {9e9e2e5c} |
 | Evelynn | 9 | 9 | Pendiente |  |
 | Ezreal | 5 | 5 | Pendiente |  |
 | Fiddlesticks | 9 | 9 | Pendiente |  |
@@ -46,7 +48,7 @@ Modelos automáticos parciales: Ahri, Jinx, Garen, Lux, Jayce, Elise. Falta cone
 | Fizz | 11 | 10 | Pendiente | Operación pendiente de interpretar: EffectValueCalculationPart |
 | Galio | 17 | 17 | Pendiente |  |
 | Gangplank | 13 | 12 | Pendiente | Estadística no interpretada: 9:0 |
-| Garen | 7 | 5 | Parcial | Valor ausente o inválido: acumulaciones {9e10ce18}; Estadística no interpretada: 9:0 |
+| Garen | 7 | 5 | Kit modelado (objetivo único) | Valor ausente o inválido: acumulaciones {9e10ce18}; Estadística no interpretada: 9:0 |
 | Gnar | 17 | 16 | Pendiente | Operación pendiente de interpretar: {ee18a47b} |
 | Gragas | 9 | 8 | Pendiente | Operación pendiente de interpretar: {4ce08984} |
 | Graves | 10 | 8 | Pendiente | Estadística no interpretada: 9:0 |
@@ -60,9 +62,9 @@ Modelos automáticos parciales: Ahri, Jinx, Garen, Lux, Jayce, Elise. Falta cone
 | Janna | 13 | 12 | Pendiente | Estadística no interpretada: 7:2 |
 | Jarvan IV | 6 | 4 | Pendiente | Operación pendiente de interpretar: EffectValueCalculationPart |
 | Jax | 18 | 15 | Pendiente | Valor ausente o inválido: acumulaciones {a8a3dd7a}; Operación pendiente de interpretar: GameCalculationConditional |
-| Jayce | 10 | 10 | Parcial |  |
+| Jayce | 10 | 10 | Kit modelado (objetivo único) |  |
 | Jhin | 10 | 9 | Pendiente | Estadística no interpretada: 10:0 |
-| Jinx | 5 | 5 | Parcial |  |
+| Jinx | 5 | 5 | Kit modelado (objetivo único) |  |
 | K'Sante | 21 | 14 | Pendiente | Operación pendiente de interpretar: EffectValueCalculationPart; Operación pendiente de interpretar: {ee18a47b}; Valor ausente o inválido: acumulaciones {5eb30a0d}; Valor ausente o inválido: acumulaciones {7a26bd77}; Valor ausente o inválido: acumulaciones {93574dbd}; Valor ausente o inválido: acumulaciones {6244221a} |
 | Kai'Sa | 11 | 7 | Pendiente | Operación pendiente de interpretar: GameCalculationConditional; Operación pendiente de interpretar: EffectValueCalculationPart; Valor ausente o inválido: mCeiling |
 | Kalista | 8 | 6 | Pendiente | Estadística no interpretada: 7:0; Valor ausente o inválido: mCeiling |
@@ -85,7 +87,7 @@ Modelos automáticos parciales: Ahri, Jinx, Garen, Lux, Jayce, Elise. Falta cone
 | Locke | 20 | 15 | Pendiente | Valor ausente o inválido: acumulaciones {b5c3348f}; Operación pendiente de interpretar: {ee18a47b} |
 | Lucian | 10 | 6 | Pendiente | Estadística no interpretada: 9:0; Estadística no interpretada: 9:2 |
 | Lulu | 8 | 8 | Pendiente |  |
-| Lux | 6 | 6 | Parcial |  |
+| Lux | 6 | 6 | Kit modelado (objetivo único) |  |
 | Malphite | 9 | 9 | Pendiente |  |
 | Malzahar | 11 | 10 | Pendiente | Operación pendiente de interpretar: AbilityResourceByCoefficientCalculationPart |
 | Maokai | 11 | 11 | Pendiente |  |

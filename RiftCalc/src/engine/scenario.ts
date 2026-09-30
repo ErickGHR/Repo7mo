@@ -7,7 +7,7 @@ import {
   DamageResult,
   DamageType,
 } from "./types";
-import { calculateStats, growthFactor } from "./stats";
+import { calculateChampionStatsAtLevel, calculateStats } from "./stats";
 import { applyPenetration, resistanceMultiplier } from "./resistance";
 import {
   itemById,
@@ -16,7 +16,8 @@ import {
   championById,
 } from "../data/catalog";
 import { createMechanics, advancedChampions } from "./champion-mechanics";
-import { abilityPatch } from "../data/abilities";
+import { abilityPatch, findSpell } from "../data/abilities";
+import { requireFormula, spellValue } from "./formulas";
 import models from "../data/models.json";
 import { EFFECT_PATCH, itemEffects, modeledItems } from "./effects";
 import { validateConfiguration } from "./validation";
@@ -88,9 +89,44 @@ export function calculateScenario(c: BuildConfiguration): DamageResult {
     );
   if (s.crit > 0)
     warnings.push("Los golpes críticos no se simulan: ataques sin crítico.");
-  if (c.championId === "Garen" && c.buffs.garenStacks === 150)
-    warnings.push(
-      "Garen W: amplificación de resistencias al máximo de acumulaciones pendiente.",
+  if (c.championId === "Ahri") {
+    const passive = findSpell("Ahri", "AhriPassive");
+    const base = calculateChampionStatsAtLevel(championById.Ahri, c.level);
+    const takedownHeal = requireFormula(passive, "ChampionHeal", {
+      level: c.level,
+      rank: 0,
+      stats: s,
+      base,
+    });
+    const fragmentHeal = requireFormula(passive, "MinionHeal", {
+      level: c.level,
+      rank: 0,
+      stats: s,
+      base,
+    });
+    included.push(
+      `Ahri P: cada baja de campeón tras dañarlo en los últimos ${spellValue(passive, "TakedownWindow", 0)} s cura ${takedownHeal.toFixed(1)} de vida; la vida propia no se simula.`,
+    );
+    included.push(
+      `Ahri P: al reunir ${spellValue(passive, "MaxStacks", 0)} esencias al matar súbditos, cura ${fragmentHeal.toFixed(1)} de vida; las bajas de súbditos no forman parte del combo.`,
+    );
+  }
+  if (c.championId === "Garen") {
+    const passive = findSpell("Garen", "GarenPassive");
+    const base = calculateChampionStatsAtLevel(championById.Garen, c.level);
+    const regen = requireFormula(passive, "RegenCalc", {
+      level: c.level,
+      rank: 0,
+      stats: s,
+      base,
+    });
+    included.push(
+      `Garen P: tras ${spellValue(passive, "DamageTimer", 0)} s sin recibir daño de campeones/monstruos, regenera ${regen.toFixed(1)}% de vida máxima cada 5 s; la vida propia no se simula.`,
+    );
+  }
+  if (c.championId === "Jinx" && c.buffs.jinxExcited)
+    included.push(
+      "Jinx P activa al inicio: +25% de velocidad de ataque durante 6 s; el aumento de movimiento no afecta el daño.",
     );
   warnings.push(
     "Secuencia ideal: todos los impactos aciertan. No se validan maná, alcance ni enfriamientos de habilidades.",
@@ -207,8 +243,36 @@ export function calculateScenario(c: BuildConfiguration): DamageResult {
         warnings,
       })
     : null;
+  const jinxBaseAs = s.as;
+  let jinxRockets = false;
+  let jinxMinigunStacks = 0;
+  let jinxMinigunExpires = 0;
+  const prepareJinx = () => {
+    if (c.championId !== "Jinx") return;
+    if (state.elapsedTime >= jinxMinigunExpires) jinxMinigunStacks = 0;
+    const qRank = c.ranks.Q;
+    const minigunAs = qRank
+      ? modelValue("Jinx", "Q", "MinigunAttackSpeedMax", qRank) / 100
+      : 0;
+    const excitement =
+      c.buffs.jinxExcited && state.elapsedTime < 6
+        ? 1 +
+          spellValue(findSpell("Jinx", "JinxPassiveMarker"), "ASBuff", 0) / 100
+        : 1;
+    const rocketPenalty = jinxRockets
+      ? 1 - modelValue("Jinx", "Q", "RocketASPDPenalty", Math.max(1, qRank))
+      : 1;
+    s.as = Math.min(
+      2.5,
+      jinxBaseAs *
+        (1 + (minigunAs * jinxMinigunStacks) / 3) *
+        excitement *
+        rocketPenalty,
+    );
+  };
   let firstHitTime: number | null = null,
-    hitCount = 0;
+    hitCount = 0,
+    lastAhriAbilityHit: number | null = null;
   for (const action of c.actions) {
     if (state.health <= 0) break;
     if ((state.cooldowns["armor-shred-until"] ?? 0) <= state.elapsedTime)
@@ -227,6 +291,7 @@ export function calculateScenario(c: BuildConfiguration): DamageResult {
       state.cooldowns["spellblade-until"] = state.elapsedTime + 10;
     }
     mechanics?.prepare();
+    prepareJinx();
     const before = sources.length;
     if (
       mechanics &&
@@ -234,6 +299,18 @@ export function calculateScenario(c: BuildConfiguration): DamageResult {
       mechanics.act(action)
     ) {
       // The champion module emitted the ordered impacts and state changes.
+    } else if (action === "AA" && c.championId === "Jinx") {
+      emit(
+        jinxRockets ? "Ataque básico · Fishbones" : "Ataque básico · Pow-Pow",
+        "physical",
+        s.ad * (jinxRockets ? modelValue("Jinx", "Q", "RocketTAD", 1) : 1),
+        jinxRockets ? "110% AD total · cohete" : "100% AD",
+      );
+      onHit();
+      if (!jinxRockets) {
+        jinxMinigunStacks = Math.min(3, jinxMinigunStacks + 1);
+        jinxMinigunExpires = state.elapsedTime + 2.5;
+      }
     } else if (action === "AA") {
       emit(
         "Ataque básico",
@@ -282,9 +359,10 @@ export function calculateScenario(c: BuildConfiguration): DamageResult {
       }
       if (c.championId === "Jinx") {
         if (action === "Q") {
-          state.rockets = !state.rockets;
+          jinxRockets = !jinxRockets;
+          state.rockets = jinxRockets;
           included.push(
-            "Jinx Q cambia arma; el siguiente AA usa el arma activa",
+            `Jinx Q cambia a ${jinxRockets ? "Fishbones: 110% AD, más alcance, 10% menos velocidad de ataque" : "Pow-Pow: tres acumulaciones de velocidad de ataque"}.`,
           );
         }
         if (action === "W")
@@ -324,18 +402,20 @@ export function calculateScenario(c: BuildConfiguration): DamageResult {
           );
           onHit();
         }
-        if (action === "W")
-          included.push("Garen W defensiva: 0 daño al objetivo");
+        if (action === "W") {
+          const w = findSpell("Garen", "GarenW");
+          const shield = requireFormula(w, "TotalShield", {
+            level: c.level,
+            rank,
+            stats: s,
+            base: calculateChampionStatsAtLevel(championById.Garen, c.level),
+          });
+          included.push(
+            `Garen W: escudo de ${shield.toFixed(1)}, reducción de ${Math.round(spellValue(w, "DRPercent", rank) * 100)}% durante ${spellValue(w, "DRDuration", rank)} s y tenacidad inicial del 60% por ${spellValue(w, "UpfrontDuration", rank)} s; la defensa no altera el daño saliente.`,
+          );
+        }
         if (action === "E") {
-          const spins =
-            v("NumTicks") +
-            Math.floor(
-              ((championById.Garen.stats.attackspeedperlevel *
-                growthFactor(c.level)) /
-                100 +
-                s.itemAs) /
-                v("ASPerTick"),
-            );
+          const spins = v("NumTicks") + Math.floor(s.bonusAs / v("ASPerTick"));
           for (let i = 0; i < spins && state.health > 0; i++) {
             emit(
               `E · Giro ${i + 1}/${spins}`,
@@ -363,6 +443,8 @@ export function calculateScenario(c: BuildConfiguration): DamageResult {
       }
     }
     if (sources.length > before) {
+      if (c.championId === "Ahri" && action !== "AA")
+        lastAhriAbilityHit = state.elapsedTime;
       if (firstHitTime === null || state.elapsedTime - firstHitTime > 3) {
         firstHitTime = state.elapsedTime;
         hitCount = 0;
@@ -384,6 +466,24 @@ export function calculateScenario(c: BuildConfiguration): DamageResult {
       }
     }
     state.elapsedTime += action === "AA" ? 1 / s.as : 0.5;
+  }
+  if (
+    c.championId === "Ahri" &&
+    state.health <= 0 &&
+    lastAhriAbilityHit !== null &&
+    state.elapsedTime - lastAhriAbilityHit <=
+      spellValue(findSpell("Ahri", "AhriPassive"), "TakedownWindow", 0)
+  ) {
+    const passive = findSpell("Ahri", "AhriPassive");
+    const heal = requireFormula(passive, "ChampionHeal", {
+      level: c.level,
+      rank: 0,
+      stats: s,
+      base: calculateChampionStatsAtLevel(championById.Ahri, c.level),
+    });
+    included.push(
+      `Ahri P se activa al derribar el objetivo: cura ${heal.toFixed(1)} de vida (no se agrega al daño ni se lleva la vida de Ahri).`,
+    );
   }
   const sum = (type?: DamageType) =>
     sources

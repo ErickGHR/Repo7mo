@@ -175,19 +175,57 @@ test("Elise: formas distinguen vida actual y faltante; R activa pasiva, E amplif
   close(
     calculateScenario({ ...c, mechanics: { alternateForm: true } })
       .totalRawDamage,
-    50 + 80 + 14,
+    50 + 80 + 14 + 20,
   );
   close(
     calculateScenario({ ...c, actions: ["R", "AA"] }).totalRawDamage,
-    calculateStats(c).ad + 14,
+    calculateStats(c).ad + 14 + 20,
   );
   close(
     calculateScenario({ ...c, actions: ["R", "E", "AA"] }).totalRawDamage,
-    calculateStats(c).ad + 14 * 1.4,
+    calculateStats(c).ad + 14 * 1.4 + 20,
   );
   assert.equal(
     calculateScenario({ ...c, actions: ["R", "R", "AA"] }).sources.length,
     1,
+  );
+});
+test("Jinx: arma, acumulaciones de Pow-Pow y pasiva activa cambian la cadencia", () => {
+  const c = config("Jinx", { actions: ["AA", "AA", "AA"] });
+  const normal = calculateScenario(c);
+  const excited = calculateScenario({
+    ...c,
+    buffs: { ...c.buffs, jinxExcited: true },
+  });
+  assert.ok(excited.sources[1].time < normal.sources[1].time);
+  assert.ok(
+    normal.sources[2].time - normal.sources[1].time <
+      normal.sources[1].time - normal.sources[0].time,
+  );
+  const rocket = calculateScenario({ ...c, actions: ["Q", "AA"] });
+  close(rocket.sources[0].raw, calculateStats(c).ad * 1.1);
+});
+test("Ahri y Garen: las pasivas y la defensa se informan en el desglose", () => {
+  const ahri = config("Ahri", {
+    target: {
+      level: 11,
+      maxHealth: 10,
+      health: 10,
+      armor: 0,
+      mr: 0,
+      shield: 0,
+      reduction: 0,
+    },
+    actions: ["Q"],
+  });
+  assert.ok(
+    calculateScenario(ahri).included.some((x) =>
+      x.includes("Ahri P se activa"),
+    ),
+  );
+  const garen = config("Garen", { actions: ["W"] });
+  assert.ok(
+    calculateScenario(garen).included.some((x) => x.includes("escudo de")),
   );
 });
 test("rangos de transformación, 6 puntos de Jayce y persistencia del estado inicial", () => {

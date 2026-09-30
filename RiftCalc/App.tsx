@@ -247,9 +247,6 @@ export default function App() {
             </View>
           </View>
           <View style={{ gap: 8 }}>
-            <Text style={[styles.tiny, { color: colors.accent }]}>
-              CONFIGURA. CALCULA. COMPRENDE.
-            </Text>
             <Text
               accessibilityRole="header"
               style={{

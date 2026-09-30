@@ -1,5 +1,10 @@
 import { Champion, ChampionStats, BuildConfiguration, Item } from "./types";
-import { championById, itemById, patch } from "../data/catalog";
+import {
+  championById,
+  itemById,
+  itemStatOverrides,
+  patch,
+} from "../data/catalog";
 import { EFFECT_PATCH } from "./effects";
 export const growthFactor = (level: number) =>
   (0.7025 + 0.0175 * (level - 1)) * (level - 1);
@@ -13,6 +18,10 @@ export function calculateChampionStatsAtLevel(
   const bonusAs = (s.attackspeedperlevel * g) / 100;
   return {
     hp: s.hp + s.hpperlevel * g,
+    mana: s.mp + s.mpperlevel * g,
+    hpRegen: s.hpregen + s.hpregenperlevel * g,
+    manaRegen: s.mpregen + s.mpregenperlevel * g,
+    moveSpeed: s.movespeed,
     ad,
     baseAd: ad,
     bonusAd: 0,
@@ -28,6 +37,9 @@ export function calculateChampionStatsAtLevel(
     armorPen: 0,
     magicPen: 0,
     magicPenPercent: 0,
+    lifeSteal: 0,
+    omnivamp: 0,
+    goldPer10: 0,
   };
 }
 /** DDragon omits some stats from stats; read explicit numeric text only inside its stats block. */
@@ -51,6 +63,15 @@ export function extraItemStats(item: Item) {
       ? read("Penetración de Magia") / 100
       : 0,
     armorPen: read("Penetración de Armadura") / 100,
+    hpRegenPercent:
+      (itemStatOverrides[item.id]?.hpRegenPercent || 0) +
+      read("Regen\\. de Vida Básica") / 100,
+    manaRegenPercent:
+      (itemStatOverrides[item.id]?.manaRegenPercent || 0) +
+      read("Regen\\. de Maná Básica") / 100,
+    goldPer10: itemStatOverrides[item.id]?.goldPer10 || 0,
+    lifeSteal: item.stats.PercentLifeStealMod || 0,
+    omnivamp: read("Omnivampirismo") / 100,
   };
 }
 export function calculateStats(c: BuildConfiguration): ChampionStats {
@@ -66,6 +87,15 @@ export function calculateStats(c: BuildConfiguration): ChampionStats {
     s.ap += i.FlatMagicDamageMod || 0;
     s.armor += i.FlatArmorMod || 0;
     s.mr += i.FlatSpellBlockMod || 0;
+    s.mana += i.FlatMPPoolMod || 0;
+    s.hpRegen += s.hpRegen * (x.hpRegenPercent || 0);
+    s.manaRegen += s.manaRegen * (x.manaRegenPercent || 0);
+    s.moveSpeed += i.FlatMovementSpeedMod || 0;
+    s.moveSpeed *= 1 + (i.PercentMovementSpeedMod || 0);
+    s.hpRegen += (i.FlatHPRegenMod || 0) * 5;
+    s.lifeSteal += x.lifeSteal || 0;
+    s.omnivamp += x.omnivamp || 0;
+    s.goldPer10 += x.goldPer10 || 0;
     s.itemAs += i.PercentAttackSpeedMod || 0;
     s.crit += i.FlatCritChanceMod || 0;
     s.haste += x.haste;
@@ -97,7 +127,7 @@ export function calculateStats(c: BuildConfiguration): ChampionStats {
     s.ap += c.buffs.allyAp;
     s.ad += c.buffs.allyAd;
   }
-  if (c.championId === "Garen" && c.ranks.W > 0) {
+  if (c.championId === "Garen") {
     const resist = Math.min(30, c.buffs.garenStacks * 0.2);
     s.armor += resist;
     s.mr += resist;

@@ -110,7 +110,12 @@ export function validateConfiguration(c: BuildConfiguration): string[] {
     errors.push("Este campeón comienza con R desbloqueada.");
   if (
     c.mechanics !== undefined &&
-    (!c.mechanics || typeof c.mechanics.alternateForm !== "boolean")
+    (!c.mechanics ||
+      typeof c.mechanics.alternateForm !== "boolean" ||
+      (c.mechanics.spiderlings !== undefined &&
+        (!Number.isInteger(c.mechanics.spiderlings) ||
+          c.mechanics.spiderlings < 0 ||
+          c.mechanics.spiderlings > 20)))
   )
     errors.push("Estado de transformación inválido.");
   const t = c.target;
@@ -140,6 +145,7 @@ export function validateConfiguration(c: BuildConfiguration): string[] {
         "healthy",
       ] as const
     ).some((k) => typeof b[k] !== "boolean") ||
+    (b.jinxExcited !== undefined && typeof b.jinxExcited !== "boolean") ||
     !finite(b.allyAp, 0, 2000) ||
     !finite(b.allyAd, 0, 2000) ||
     !finite(b.garenStacks, 0, 150) ||

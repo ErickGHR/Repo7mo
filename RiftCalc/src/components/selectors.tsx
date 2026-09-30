@@ -7,6 +7,8 @@ import {
   runeTrees,
   supported,
   supportedRunes,
+  startingItems,
+  startingItemNotes,
   asset,
   strip,
 } from "../data/catalog";
@@ -47,7 +49,8 @@ export function ChampionSelector({
         placeholder="Buscar entre 173 campeones…"
       />
       <Label>
-        Combate parcial: {[...supported, ...advancedChampions].join(" · ")}
+        Kit con cálculo automático:{" "}
+        {[...supported, ...advancedChampions].join(" · ")}
       </Label>
       <ScrollView keyboardShouldPersistTaps="handled">
         <View style={[styles.row, { alignItems: "stretch" }]}>
@@ -73,13 +76,14 @@ export function ChampionSelector({
               <Text
                 style={{
                   fontSize: 10,
-                  color: supported.includes(c.id)
-                    ? colors.accent
-                    : colors.muted,
+                  color:
+                    supported.includes(c.id) || advancedChampions.includes(c.id)
+                      ? colors.accent
+                      : colors.muted,
                 }}
               >
                 {supported.includes(c.id) || advancedChampions.includes(c.id)
-                  ? "COMBATE PARCIAL"
+                  ? "KIT MODELADO · 1 OBJETIVO"
                   : "Catálogo + AA"}
               </Text>
             </Pressable>
@@ -118,12 +122,10 @@ export function ItemCard({
       <SafeIcon name={item.name} uri={asset("item", item.image.full)} />
       <View style={{ flex: 1, gap: 4 }}>
         <Text style={styles.text}>{item.name}</Text>
-        <Label>
-          {strip(
-            item.description.match(/<stats>([\s\S]*?)<\/stats>/)?.[1] ||
-              item.plaintext,
-          )}
-        </Label>
+        <Label>{strip(item.description || item.plaintext)}</Label>
+        {startingItemNotes[item.id] && (
+          <Label>{startingItemNotes[item.id]}</Label>
+        )}
         <Text
           style={{
             fontSize: 11,
@@ -131,8 +133,10 @@ export function ItemCard({
           }}
         >
           {modeledItems.includes(item.id)
-            ? "Efecto de daño / estadísticas modelado"
-            : "Estadísticas · efectos especiales pendientes"}
+            ? "Estadísticas y efecto de daño modelados"
+            : startingItems.includes(item.id)
+              ? "Estadísticas mostradas; el efecto especial se describe aparte"
+              : "Estadísticas mostradas; efectos especiales pendientes"}
         </Text>
       </View>
       <Text style={{ color: "#E3C883", fontSize: 12 }}>
@@ -155,6 +159,7 @@ export function ItemSelector({
   const [search, setSearch] = useState(""),
     [filter, setFilter] = useState("Todos");
   const filters: Record<string, string> = {
+    Inicio: "Starting",
     AP: "SpellDamage",
     AD: "Damage",
     Defensa: "Armor",
@@ -163,7 +168,10 @@ export function ItemSelector({
   const list = items.filter(
     (i) =>
       i.name.toLowerCase().includes(search.toLowerCase()) &&
-      (filter === "Todos" || i.tags.includes(filters[filter])),
+      (filter === "Todos" ||
+        (filter === "Inicio"
+          ? startingItems.includes(i.id)
+          : i.tags.includes(filters[filter]))),
   );
   return (
     <Modal

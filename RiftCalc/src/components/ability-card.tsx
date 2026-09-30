@@ -8,8 +8,15 @@ import {
 } from "../engine/champion-mechanics";
 import { AbilityKey, BuildConfiguration } from "../engine/types";
 import { maxRank } from "../engine/validation";
-import { Button, Card, Label, SafeIcon, styles, colors } from "./ui";
-import { FormulaExplorer } from "./formula-explorer";
+import {
+  Button,
+  Card,
+  Label,
+  NumericInput,
+  SafeIcon,
+  styles,
+  colors,
+} from "./ui";
 export function AbilityCard({
   config,
   onRank,
@@ -30,6 +37,7 @@ export function AbilityCard({
     freeR -
     Object.values(config.ranks).reduce((a, b) => a + b, 0);
   const forms = transformationForms[config.championId];
+  const spiderlingCap = [0, 2, 3, 4, 5][config.ranks.R] ?? 2;
   return (
     <>
       <Card
@@ -59,10 +67,36 @@ export function AbilityCard({
                   key={form}
                   title={form}
                   active={!!config.mechanics?.alternateForm === !!i}
-                  onPress={() => onMechanics({ alternateForm: !!i })}
+                  onPress={() =>
+                    onMechanics({
+                      alternateForm: !!i,
+                      spiderlings:
+                        config.mechanics?.spiderlings ?? spiderlingCap,
+                    })
+                  }
                 />
               ))}
             </View>
+            {config.championId === "Elise" && (
+              <>
+                <NumericInput
+                  label="Arañitas disponibles al inicio"
+                  value={config.mechanics?.spiderlings ?? spiderlingCap}
+                  min={0}
+                  max={spiderlingCap}
+                  onChange={(spiderlings) =>
+                    onMechanics({
+                      alternateForm: config.mechanics?.alternateForm ?? false,
+                      spiderlings,
+                    })
+                  }
+                />
+                <Label>
+                  Las habilidades humanas almacenan arañitas hasta el límite; la
+                  forma arácnida las suma en Q y ataques básicos.
+                </Label>
+              </>
+            )}
           </>
         )}
         {freeR > 0 && (
@@ -121,7 +155,6 @@ export function AbilityCard({
             : "Habilidades y pasiva disponibles como referencia. Este campeón todavía no tiene un modelo de combate automático; el combo solo calcula AA genéricos."}
         </Label>
       </Card>
-      <FormulaExplorer key={config.championId} config={config} />
     </>
   );
 }

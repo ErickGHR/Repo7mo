@@ -74,6 +74,14 @@ export function createMechanics({
   const originalAS = s.as,
     originalArmor = s.armor,
     originalMR = s.mr;
+  const spiderlingCap =
+    c.championId === "Elise"
+      ? value("EliseR", "BaseSpiderlingsStored", c.ranks.R)
+      : 0;
+  let spiderlings = Math.min(
+    spiderlingCap,
+    c.mechanics?.spiderlings ?? spiderlingCap,
+  );
   const prepare = () => {
     if (c.championId === "Jayce") {
       const resists = alternate ? 0 : calc("JayceStanceHtG", "Resists", 1);
@@ -86,15 +94,31 @@ export function createMechanics({
       }
     }
     if (c.championId === "Elise") {
-      s.as = Math.min(
-        2.5,
-        originalAS +
-          (live("frenzy")
-            ? championById.Elise.stats.attackspeedratio *
-              value("EliseSpiderW", "ActiveAttackSpeed", c.ranks.W)
-            : 0),
-      );
+      const passiveAs = value("EliseSpiderW", "PassiveAttackSpeed", c.ranks.W);
+      const activeAs = live("frenzy")
+        ? value("EliseSpiderW", "ActiveAttackSpeed", c.ranks.W)
+        : 0;
+      s.as = Math.min(2.5, originalAS * (1 + passiveAs + activeAs));
     }
+  };
+  const spiderlingStrikes = () => {
+    if (!spiderlings) return;
+    damage(
+      "EliseR",
+      "SpiderlingTotalDamage",
+      c.ranks.R,
+      "magic",
+      `P · Arañitas × ${spiderlings}`,
+      spiderlings,
+    );
+  };
+  const storeSpiderling = () => {
+    const before = spiderlings;
+    spiderlings = Math.min(spiderlingCap, spiderlings + 1);
+    if (spiderlings > before)
+      included.push(
+        `Elise P: acumula arañita (${spiderlings}/${spiderlingCap}).`,
+      );
   };
   const elisePassive = () => {
     if (!alternate) return;
@@ -112,6 +136,7 @@ export function createMechanics({
     included.push(
       `Elise: curación por impacto ${(calc("EliseR", "PassiveTotalHealing", c.ranks.R) * amp).toFixed(1)} (no cambia la vida del objetivo).`,
     );
+    spiderlingStrikes();
   };
   const luxPassive = () => {
     if (!live("illumination")) return;
@@ -125,8 +150,8 @@ export function createMechanics({
     );
   };
   if (c.championId === "Elise")
-    warnings.push(
-      "Elise: arañitas y desplazamiento no simulados; el cálculo incluye el daño de Elise y su pasiva en forma arácnida.",
+    included.push(
+      `Elise P: ${spiderlings}/${spiderlingCap} arañitas al inicio; cada habilidad humana que acierta genera una hasta el límite.`,
     );
   if (c.championId === "Jayce")
     warnings.push(
@@ -217,7 +242,7 @@ export function createMechanics({
         alternate = !alternate;
         firstAfterTransform = true;
         included.push(
-          `${c.championId}: transformación a ${transformationForms[c.championId][alternate ? 1 : 0]}.`,
+          `${c.championId}: transformación a ${transformationForms[c.championId][alternate ? 1 : 0]}. ${c.championId === "Jayce" ? `Pasiva: +${value("JaycePassive", "FlatMovementSpeed", 0)} de velocidad de movimiento e ignora colisiones durante ${value("JaycePassive", "MovementSpeedDuration", 0)} s; no modifica daño.` : ""}`,
         );
         prepare();
         return true;
@@ -284,7 +309,7 @@ export function createMechanics({
           if (alternate) {
             elisePassive();
             onHit();
-          }
+          } else storeSpiderling();
         }
         if (action === "W") {
           if (alternate)
@@ -298,6 +323,7 @@ export function createMechanics({
               "magic",
               "W · Araña Volátil",
             );
+          if (!alternate) storeSpiderling();
         }
         if (action === "E") {
           if (alternate) {
@@ -311,6 +337,7 @@ export function createMechanics({
             included.push(
               `Elise E: aturdimiento ${calc("EliseHumanE", "TotalStunDuration", rank).toFixed(1)} s; sin daño directo.`,
             );
+          if (!alternate) storeSpiderling();
         }
         return true;
       }

@@ -54,6 +54,10 @@ export function StatGrid({ stats: s }: { stats: ChampionStats }) {
     <View style={styles.row}>
       {Object.entries({
         Vida: s.hp,
+        Maná: s.mana,
+        "Regen. vida": s.hpRegen.toFixed(1),
+        "Regen. maná": s.manaRegen.toFixed(1),
+        "Vel. movimiento": s.moveSpeed.toFixed(0),
         AD: s.ad,
         AP: s.ap,
         Armadura: s.armor,
@@ -64,6 +68,9 @@ export function StatGrid({ stats: s }: { stats: ChampionStats }) {
         Letalidad: s.lethality,
         "Pen. arm.": `${Math.round(s.armorPen * 100)}%`,
         "Pen. magia": `${fmt(s.magicPen)} + ${Math.round(s.magicPenPercent * 100)}%`,
+        "Robo de vida": `${Math.round(s.lifeSteal * 100)}%`,
+        Omnivampirismo: `${Math.round(s.omnivamp * 100)}%`,
+        ...(s.goldPer10 > 0 ? { "Oro / 10 s": s.goldPer10 } : {}),
       }).map(([name, value]) => (
         <View key={name} style={{ width: "46%", paddingVertical: 5 }}>
           <StatRow name={name} value={value} />
@@ -93,7 +100,7 @@ export function ChampionCard({
           <Label>{c.title}</Label>
           <Text style={{ color: colors.accent, fontSize: 11 }}>
             {supported.includes(c.id) || advancedChampions.includes(c.id)
-              ? "MODELO DE COMBATE PARCIAL"
+              ? "KIT MODELADO · OBJETIVO ÚNICO"
               : "CATÁLOGO COMPLETO · COMBATE PENDIENTE"}
           </Text>
         </View>
@@ -299,11 +306,22 @@ export function BuffSelector({
         </>
       )}
       {config.championId === "Jinx" && (
-        <BuffToggle
-          label="R a distancia máxima"
-          value={b.rocketMax}
-          onChange={(v) => onChange({ rocketMax: v })}
-        />
+        <>
+          <BuffToggle
+            label="R a distancia máxima"
+            value={b.rocketMax}
+            onChange={(v) => onChange({ rocketMax: v })}
+          />
+          <BuffToggle
+            label="Pasiva ¡Comienza a Emocionarte! activa"
+            value={b.jinxExcited ?? false}
+            onChange={(v) => onChange({ jinxExcited: v })}
+          />
+          <Label>
+            La pasiva aumenta la velocidad de ataque durante 6 s; la velocidad
+            de movimiento no cambia el daño calculado.
+          </Label>
+        </>
       )}
       {config.runes.includes(8112) && (
         <BuffToggle

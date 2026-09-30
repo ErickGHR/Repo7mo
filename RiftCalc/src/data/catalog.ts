@@ -32,6 +32,31 @@ export const runes: Rune[] = riot.runes.flatMap((t) =>
 export const runeTrees = riot.runes;
 export const details = riot.details;
 export const supported = ["Ahri", "Jinx", "Garen"];
+export const startingItems = [
+  "1004",
+  "1029",
+  "1033",
+  "1036",
+  "1052",
+  "1054",
+  "1055",
+  "1056",
+  "1083",
+  "2003",
+  "2031",
+  "3865",
+];
+/** CommunityDragon 16.19 fields missing from Data Dragon's item.stats. */
+export const itemStatOverrides: Record<
+  string,
+  { hpRegenPercent?: number; manaRegenPercent?: number; goldPer10?: number }
+> = {
+  "3865": { hpRegenPercent: 0.5, manaRegenPercent: 0.25, goldPer10: 3 },
+};
+export const startingItemNotes: Record<string, string> = {
+  "3865":
+    "+50% de regeneración básica de vida, +25% de regeneración básica de maná y +3 de oro cada 10 s. Su misión, cargas y oro por súbditos no afectan este cálculo de combate.",
+};
 export const supportedRunes = [8112, 8236, 8233, 8014];
 export const asset = (group: string, file: string) =>
   `https://ddragon.leagueoflegends.com/cdn/${patch}/img/${group}/${file}`;
@@ -63,6 +88,7 @@ export const initialConfig: BuildConfiguration = {
     electrocute: true,
     healthy: true,
     garenStacks: 0,
+    jinxExcited: false,
   },
   target: {
     maxHealth: 2500,

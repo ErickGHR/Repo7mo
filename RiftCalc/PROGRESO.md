@@ -1,39 +1,33 @@
-# Registro de reanudación — 2026-09-29
+# Estado del proyecto — 29 de septiembre de 2026
 
-## Solicitud activa
-Ampliar habilidades avanzadas, pasivas y transformaciones a todos los campeones, manteniendo React Native y el parche 16.19.1.
+## Solicitud atendida
 
-## Estado recuperado tras desconexión
-- Estadísticas base: 173 campeones; commit 51459b1.
-- Descarga finalizada: 346 JSON (Data Dragon es_MX y registros CommunityDragon 16.19).
-- Caché local: scripts/ability-cache/. No es necesario repetir descargas válidas.
-- No hay descarga ni compilación de RiftCalc en ejecución al reanudar.
-- Motor automático existente: Ahri, Jinx, Garen. La descarga de datos no equivale a cobertura automática de combate.
-- Cambios del usuario en Servidor preservados.
+Completar el modelo de los seis campeones trabajados (Ahri, Jinx, Garen, Lux, Jayce y Elise), añadir estadísticas de objetos de inicio y revisar la documentación. Se conserva React Native/Expo SDK 57 y el parche de datos 16.19.1.
 
-## Trabajo en curso
-1. Importador reproducible y catálogo completo de habilidades/pasivas/variantes.
-2. Evaluador de fórmulas con errores explícitos para operaciones no interpretadas.
-3. Integración de condiciones y transformaciones al cálculo de secuencias.
-4. Controles React Native, persistencia y pruebas de regresión.
-5. Auditoría de cobertura: separar datos disponibles de mecánicas simuladas.
+## Cobertura actual
 
-## Avance después de reanudar
-- Catálogo importado: 173 kits, 984 registros y 2020 expresiones; archivo src/data/abilities.json.
-- Evaluador: 1800 expresiones evaluables en el escenario de auditoría. No equivale a cobertura de combate.
-- Nuevos modelos parciales: Lux, Jayce y Elise. Los cambios de forma inicial se guardan junto a la build; R alterna formas en secuencia.
-- Interfaz: descripciones/iconos de todos los kits, explorador de fórmulas, controles de forma y rangos especiales.
-- Auditoría por campeón: design/COBERTURA-HABILIDADES.md, regenerable mediante npm run data:audit.
-- Pruebas: 42 aprobadas; incluye marca de Lux, portal e Hipercarga de Jayce, vida actual/faltante y pasiva arácnida de Elise, rangos gratuitos, persistencia y errores del intérprete.
-- Pendiente principal: implementar y verificar modelos de combate para los otros 167 campeones. No presentar el catálogo como cobertura de combate completa.
-- Pendientes específicos: 220 expresiones requieren contexto/operaciones adicionales; arañitas de Elise, temporización completa, pasivas originales del MVP y transformaciones restantes.
-- Vista previa reanudada: npm run dev -- --port 8081 --offline (Expo). Sesión de terminal 16006; puede dejar de existir al cerrar la aplicación. Antes de reiniciar, comprobar el puerto/proceso.
-- La descarga está completada; no hay actualizador ni compilación trabajando en segundo plano.
+- Daño de Q/W/E/R y ataques para un objetivo en los seis campeones; pasivas y cambios de forma que intervienen en el cálculo están conectados.
+- Ahri: Q de ida/regreso, fuegos de W, R por carga y curaciones de P informadas cuando se simula una baja.
+- Jinx: cambio de arma, acumulaciones de velocidad de ataque de Pow-Pow, penalización de Fishbones y estado inicial de su pasiva.
+- Garen: Q incluye el ataque, E escala sus ticks con velocidad de ataque y aplica reducción de armadura, R ejecuta, W informa escudo/mitigación y cuenta hasta 150 acumulaciones de resistencia.
+- Lux: P se consume con ataques y R; Q/E/R hacen daño, W informa el escudo por trayecto.
+- Jayce: formas y seis rangos, portal que potencia Q, tres disparos de Hipercarga, ataques posteriores a R y resistencias del martillo.
+- Elise: ambas formas, arañitas configurables/almacenadas, daño y curación de P en araña, Q por vida actual/faltante, W con velocidad pasiva/activa y amplificación de E arácnida.
+- Otros 167 campeones: catálogo y estadísticas; el daño propio de sus habilidades sigue pendiente. La tabla reproducible está en [COBERTURA-HABILIDADES.md](design/COBERTURA-HABILIDADES.md).
 
-## Validación del punto de avance
-- TypeScript sin errores.
-- 42 pruebas automatizadas aprobadas.
-- Exportaciones web, Android e iOS completadas. No se probó en dispositivos nativos.
-- Navegador: catálogo completo visible, selección de Jayce/Elise, selector de forma y pasiva de Elise en el desglose comprobados con teclado; sin errores de consola. La automatización del clic dejó de responder después de recargar y se verificó el flujo mediante Enter; conviene revisar interacción táctil en dispositivo.
-- Evidencia visual: design/elise-forma-aracnida.png.
-- Solo permanece el servidor Expo de vista previa. La implementación global de los 173 kits sigue pendiente; el detalle por campeón está en la auditoría.
+## Objetos de inicio
+
+El selector tiene un filtro “Inicio” con objetos de Doran, Sacrificar, Mapamundi, pociones y componentes comunes. La pantalla suma y muestra vida, maná, regeneración, velocidad de movimiento, robo de vida, omnivampirismo y oro periódico cuando el snapshot aporta ese dato. Mapamundi se completa con campos de CommunityDragon que Data Dragon deja vacíos. Los efectos de objetos que no alteran el daño al campeón se muestran en la ficha y no se inventan como daño.
+
+## Límites explícitos
+
+El combate calcula una secuencia ideal contra un solo objetivo: no resuelve impactos fallidos, daño recibido, críticos, navegación, maná, cooldowns de habilidades, aliados escudados ni otro campeón tras una baja. La curación propia se informa, pero no cambia una reserva de vida del campeón. La distancia de R de Jinx se estima como mínimo o máximo. Los seis modelos no equivalen a una simulación completa de partida ni a los 173 campeones.
+
+## Validación de esta entrega
+
+- `npm run lint`: pasa.
+- `npm test`: 46 pruebas aprobadas, incluidas habilidades/pasivas de los seis campeones, formas, objetos de inicio y estadísticas.
+- `npm run build`: export web de Expo completada.
+- `npm run data:audit`: auditoría regenerada; 1800/2020 expresiones evaluables en su escenario de referencia. Esa cifra no representa cobertura de combate.
+
+El export para iOS y la ejecución en Expo Go se validaron en el trabajo previo del proyecto. Esta entrega no requiere ni afirma una compilación nativa de iOS en Windows.

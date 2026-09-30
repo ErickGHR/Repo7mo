@@ -2,7 +2,7 @@
   "expo": {
     "name": "RiftCalc",
     "slug": "riftcalc",
-    "version": "1.0.0",
+    "version": "0.2.0",
     "orientation": "default",
     "userInterfaceStyle": "dark",
     "web": {

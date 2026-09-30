@@ -33,6 +33,10 @@ export interface Rune {
 }
 export interface ChampionStats {
   hp: number;
+  mana: number;
+  hpRegen: number;
+  manaRegen: number;
+  moveSpeed: number;
   ad: number;
   baseAd: number;
   bonusAd: number;
@@ -48,6 +52,9 @@ export interface ChampionStats {
   armorPen: number;
   magicPen: number;
   magicPenPercent: number;
+  lifeSteal: number;
+  omnivamp: number;
+  goldPer10: number;
 }
 export interface Target {
   maxHealth: number;
@@ -72,9 +79,10 @@ export interface Buffs {
   electrocute: boolean;
   healthy: boolean;
   garenStacks: number;
+  jinxExcited?: boolean;
 }
 export interface BuildConfiguration {
-  mechanics?: { alternateForm: boolean };
+  mechanics?: { alternateForm: boolean; spiderlings?: number };
   schema: 1;
   patch: string;
   championId: string;
