@@ -21,6 +21,7 @@ Repositorio de ejercicios y proyectos desarrollados durante el curso con JavaScr
 | [Ejercicio 01](./Ejercicio_01/) | Práctica inicial de componentes, estilos, texto e imágenes. |
 | [Ejercicio 02](./Ejercicio_02/) | Práctica de componentes reutilizables para construir una interfaz. |
 | [Ejercicio 03](./Ejercicio_03/) | Práctica de estado y ventanas modales. |
+| [FaceRecognition](./FaceRecognition/) | App móvil para detección local y comparación educativa de rostros con cámara y ML Kit. |
 | [Fitcalc](./Fitcalc/) | Calculadora de indicadores físicos desarrollada con React Native. |
 | [MongoDBConexion](./MongoDBConexion/) | Aplicación Expo que inicia sesión y consulta un catálogo de películas mediante una API y MongoDB Atlas. |
 | [RiftCalc](./RiftCalc/) | Calculadora de daño de League of Legends creada con React Native, Expo y TypeScript. |

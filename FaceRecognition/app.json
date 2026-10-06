@@ -1,0 +1,25 @@
+{
+  "expo": {
+    "name": "FaceRecognition",
+    "slug": "face-recognition",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "newArchEnabled": true,
+    "android": {
+      "package": "com.erickghr.facerecognition"
+    },
+    "ios": {
+      "bundleIdentifier": "com.erickghr.facerecognition",
+      "supportsTablet": true
+    },
+    "plugins": [
+      [
+        "expo-camera",
+        {
+          "cameraPermission": "FaceRecognition necesita usar la cámara para capturar rostros.",
+          "recordAudioAndroid": false
+        }
+      ]
+    ]
+  }
+}
