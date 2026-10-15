@@ -1,0 +1,11 @@
+<resources>
+    <style name="Theme.VertHorizon" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="colorPrimary">#3157D5</item>
+        <item name="colorPrimaryDark">#203A9A</item>
+        <item name="colorAccent">#3157D5</item>
+        <item name="android:statusBarColor">#F4F6FC</item>
+        <item name="android:windowLightStatusBar">true</item>
+        <item name="android:navigationBarColor">#F4F6FC</item>
+        <item name="android:windowLightNavigationBar">true</item>
+    </style>
+</resources>

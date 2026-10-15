@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#F4F6FC"
+    android:fillViewport="true">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="24dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="#E3E9FF"
+            android:paddingHorizontal="12dp"
+            android:paddingVertical="7dp"
+            android:text="ACTIVIDAD 2 · ANDROID"
+            android:textColor="#3157D5"
+            android:textSize="12sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="Ciclo de vida de una Activity"
+            android:textColor="#17213A"
+            android:textSize="28sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:lineSpacingExtra="3dp"
+            android:text="Escribe un dato, muéstralo y rota el dispositivo. Observa qué pasa con la Activity y con el texto."
+            android:textColor="#5A6680"
+            android:textSize="16sp" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="28dp"
+            android:text="Dato de prueba"
+            android:textColor="#24304D"
+            android:textSize="15sp"
+            android:textStyle="bold" />
+
+        <EditText
+            android:id="@+id/etDato"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:backgroundTint="#3157D5"
+            android:hint="Escribe aquí, por ejemplo: Hola Android"
+            android:importantForAutofill="no"
+            android:inputType="textCapSentences"
+            android:minHeight="56dp"
+            android:padding="14dp"
+            android:saveEnabled="true"
+            android:textColor="#17213A"
+            android:textColorHint="#8A94AA"
+            android:textSize="16sp" />
+
+        <Button
+            android:id="@+id/btnMostrar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="14dp"
+            android:text="Mostrar dato" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="22dp"
+            android:background="#FFFFFF"
+            android:elevation="2dp"
+            android:orientation="vertical"
+            android:padding="18dp">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="RESULTADO"
+                android:textColor="#6A7690"
+                android:textSize="12sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/tvResultado"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="Aquí aparecerá el texto que captures."
+                android:textColor="#17213A"
+                android:textSize="18sp" />
+        </LinearLayout>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="28dp"
+            android:text="ESTADO ACTUAL"
+            android:textColor="#6A7690"
+            android:textSize="12sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/tvEstado"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:background="#E8ECF5"
+            android:padding="14dp"
+            android:text="La Activity está iniciando…"
+            android:textColor="#35415C"
+            android:textSize="14sp" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="14dp"
+            android:text="Para ver todos los eventos: abre Logcat y filtra por CicloVidaActivity."
+            android:textColor="#6A7690"
+            android:textSize="13sp" />
+    </LinearLayout>
+</ScrollView>
