@@ -5,7 +5,15 @@
     "version": "1.0.0",
     "orientation": "portrait",
     "userInterfaceStyle": "light",
-    "splash": { "backgroundColor": "#f5f6f2", "resizeMode": "contain" },
-    "android": { "package": "com.erickghr.supabasecrud" }
+    "splash": {
+      "backgroundColor": "#f5f6f2",
+      "resizeMode": "contain"
+    },
+    "android": {
+      "package": "com.erickghr.supabasecrud"
+    },
+    "plugins": [
+      "expo-status-bar"
+    ]
   }
 }
