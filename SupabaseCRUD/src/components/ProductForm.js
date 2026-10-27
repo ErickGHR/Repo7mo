@@ -9,6 +9,7 @@ import {
 } from 'react-native';
 
 export default function ProductForm({ initialProduct, saving, onSave, onCancel }) {
+  // Los estados guardan lo que la persona escribe; los TextInput son controlados.
   const [name, setName] = useState(initialProduct?.producto ?? '');
   const [description, setDescription] = useState(initialProduct?.descripcion ?? '');
   const [price, setPrice] = useState(
@@ -16,6 +17,7 @@ export default function ProductForm({ initialProduct, saving, onSave, onCancel }
   );
 
   // Al seleccionar otro producto para editar, carga sus valores en el formulario.
+  // Al crear, initialProduct es null y los campos quedan vacíos.
   useEffect(() => {
     setName(initialProduct?.producto ?? '');
     setDescription(initialProduct?.descripcion ?? '');
@@ -23,6 +25,7 @@ export default function ProductForm({ initialProduct, saving, onSave, onCancel }
   }, [initialProduct]);
 
   const submit = () => {
+    // El teclado decimal puede entregar coma; JavaScript calcula con punto decimal.
     const numericPrice = Number(price.replace(',', '.'));
     if (!name.trim()) {
       Alert.alert('Falta el producto', 'Escribe el nombre del producto.');
@@ -33,6 +36,7 @@ export default function ProductForm({ initialProduct, saving, onSave, onCancel }
       return;
     }
 
+    // Se envía un objeto limpio al padre. Aquí no se hace ninguna consulta de red.
     onSave({
       producto: name.trim(),
       descripcion: description.trim(),
@@ -43,6 +47,7 @@ export default function ProductForm({ initialProduct, saving, onSave, onCancel }
   return (
     <View style={styles.form}>
       <Text style={styles.label}>NOMBRE DEL PRODUCTO</Text>
+      {/* value + onChangeText hacen que React conserve el texto del campo. */}
       <TextInput
         style={styles.input}
         value={name}
@@ -76,6 +81,7 @@ export default function ProductForm({ initialProduct, saving, onSave, onCancel }
         />
       </View>
 
+      {/* saving bloquea otro envío mientras App espera la respuesta de Supabase. */}
       <TouchableOpacity
         style={[styles.primaryButton, saving && styles.disabled]}
         onPress={submit}

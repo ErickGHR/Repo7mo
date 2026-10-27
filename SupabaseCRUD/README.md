@@ -2,6 +2,8 @@
 
 Aplicación móvil para administrar productos en Supabase. Este proyecto sigue las etapas de la actividad: crear la app, configurar el cliente de Supabase, comprobar la conexión y separar las operaciones **CREATE, READ, UPDATE y DELETE** en componentes comprensibles.
 
+**Guía paso a paso de cada componente:** [GUIA_COMPONENTES.md](./GUIA_COMPONENTES.md)
+
 ## Requisitos
 
 - Node.js 24.3 o posterior.
@@ -57,13 +59,15 @@ SupabaseCRUD/
 ├── App.js
 ├── supabase.js
 ├── supabase.sql
+├── GUIA_COMPONENTES.md
 └── src/
     ├── components/
     │   ├── ConnectionBanner.js
     │   ├── InventorySummary.js
     │   ├── ProductCard.js
     │   ├── ProductForm.js
-    │   └── ProductList.js
+    │   ├── ProductList.js
+    │   └── SectionHeading.js
     └── services/
         └── productService.js
 ```
@@ -80,6 +84,7 @@ Cada archivo tiene una responsabilidad concreta:
 | `ProductForm.js` | Administra los campos, valida nombre y precio, y envía el producto nuevo o editado a `App.js`. |
 | `ProductList.js` | Renderiza la lista con `FlatList`, muestra carga o inventario vacío y permite actualizar al deslizar. |
 | `ProductCard.js` | Presenta un producto y sus botones de editar y eliminar. |
+| `SectionHeading.js` | Separa visualmente las etapas numeradas y explica qué ocurre en cada sección. |
 | `supabase.sql` | Define la tabla, sus restricciones, RLS y políticas de acceso para la actividad. |
 
 ## 5. Cómo viaja una acción por la app

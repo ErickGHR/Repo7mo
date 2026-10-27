@@ -4,6 +4,7 @@ import { StyleSheet, Text, View } from 'react-native';
 const formatMoney = (amount) => `$${Number(amount).toFixed(2)}`;
 
 export default function InventorySummary({ products }) {
+  // reduce recorre el inventario: empieza en cero y suma cada precio convertido a número.
   const totalValue = products.reduce(
     (sum, product) => sum + Number(product.precio || 0),
     0,
@@ -12,11 +13,13 @@ export default function InventorySummary({ products }) {
   return (
     <View style={styles.container}>
       <View style={styles.stat}>
+        {/* El largo del arreglo equivale al número de filas consultadas. */}
         <Text style={styles.number}>{products.length}</Text>
         <Text style={styles.label}>PRODUCTOS</Text>
       </View>
       <View style={styles.divider} />
       <View style={styles.stat}>
+        {/* El total se recalcula cada vez que App recibe una lista nueva. */}
         <Text style={styles.number}>{formatMoney(totalValue)}</Text>
         <Text style={styles.label}>VALOR TOTAL</Text>
       </View>

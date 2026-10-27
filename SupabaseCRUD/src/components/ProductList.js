@@ -3,6 +3,7 @@ import { ActivityIndicator, FlatList, StyleSheet, Text, View } from 'react-nativ
 import ProductCard from './ProductCard';
 
 function EmptyInventory({ loading, error }) {
+  // El estado vacío no debe aparecer durante la carga ni tapar el error real.
   if (loading) return <ActivityIndicator color="#176b52" style={styles.loader} />;
   if (error) return null;
 
@@ -24,6 +25,8 @@ export default function ProductList({
   onEdit,
   onDelete,
 }) {
+  // FlatList virtualiza las filas: renderiza solo las que hacen falta en pantalla.
+  // Usa el id de Supabase como key estable y conecta el gesto de bajar con READ.
   return (
     <FlatList
       data={products}

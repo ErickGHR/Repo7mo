@@ -8,6 +8,7 @@ export default function ProductCard({ product, index, onEdit, onDelete }) {
     <View style={styles.card}>
       <View style={styles.top}>
         <View style={styles.badge}>
+          {/* index solo decora el orden de la lista; id sigue siendo la identidad real. */}
           <Text style={styles.badgeText}>{String(index + 1).padStart(2, '0')}</Text>
         </View>
         <View style={styles.info}>
@@ -20,13 +21,14 @@ export default function ProductCard({ product, index, onEdit, onDelete }) {
       </View>
 
       <View style={styles.actions}>
+        {/* La tarjeta no edita ni borra: avisa a App.js mediante callbacks. */}
         <TouchableOpacity
           onPress={() => onEdit(product)}
           style={styles.editButton}
           accessibilityRole="button"
           accessibilityLabel={`Editar ${product.producto}`}
         >
-          <Text style={styles.editText}>Editar</Text>
+          <Text style={styles.editText}>Editar · UPDATE</Text>
         </TouchableOpacity>
         <TouchableOpacity
           onPress={() => onDelete(product)}
@@ -34,7 +36,7 @@ export default function ProductCard({ product, index, onEdit, onDelete }) {
           accessibilityRole="button"
           accessibilityLabel={`Eliminar ${product.producto}`}
         >
-          <Text style={styles.deleteText}>Eliminar</Text>
+          <Text style={styles.deleteText}>Eliminar · DELETE</Text>
         </TouchableOpacity>
       </View>
     </View>
