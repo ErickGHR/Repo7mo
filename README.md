@@ -9,7 +9,7 @@
 
 ## Índice de proyectos
 
-Repositorio de ejercicios y proyectos desarrollados durante el curso con JavaScript, React Native, Expo, Node.js y MongoDB.
+Repositorio de ejercicios y proyectos desarrollados durante el curso con JavaScript, React Native, Expo, Node.js, MongoDB y Supabase.
 
 ## Proyectos
 
@@ -21,6 +21,7 @@ Repositorio de ejercicios y proyectos desarrollados durante el curso con JavaScr
 | [Ejercicio 01](./Ejercicio_01/) | Práctica inicial de componentes, estilos, texto e imágenes. |
 | [Ejercicio 02](./Ejercicio_02/) | Práctica de componentes reutilizables para construir una interfaz. |
 | [Ejercicio 03](./Ejercicio_03/) | Práctica de estado y ventanas modales. |
+| [FaceRecognition](./FaceRecognition/) | Aplicación de reconocimiento facial con React Native. |
 | [FragmentosAndroid](./FragmentosAndroid/) | Ejemplo Android nativo con una actividad y tres fragmentos. |
 | [VertHorizon](./VertHorizon/) | Actividad Android nativa en Java para demostrar el ciclo de vida y la restauración de datos al rotar. |
 | [Fitcalc](./Fitcalc/) | Calculadora de indicadores físicos desarrollada con React Native. |
@@ -30,14 +31,14 @@ Repositorio de ejercicios y proyectos desarrollados durante el curso con JavaScr
 | [Servidor](./Servidor/) | API de Express para autenticación y consulta de películas en MongoDB Atlas. |
 | [SplashScreen](./SplashScreen/) | Ejemplo de pantalla de carga y transición a la pantalla principal. |
 | [StackNavigator](./StackNavigator/) | Navegación por pila con calculadoras de IMC, divisas y propinas. |
+| [SupabaseCRUD](./SupabaseCRUD/) | Catálogo móvil de productos con CRUD completo, React Native, Expo y Supabase. |
 | [TabNavigation](./TabNavigation/) | Navegación por pestañas entre inicio, búsqueda y perfil. |
 | [VidaVida](./VidaVida/) | Aplicación móvil con pantalla de inicio y navegación lateral. |
-
 
 ## Conclusión
 
 Con estos proyectos aprendí bastante sobre cómo crear aplicaciones y organizar mejor mi trabajo. Al principio algunas cosas se me hicieron complicadas, pero con cada ejercicio fui entendiendo mejor cómo hacer las pantallas, agregar funciones y conectar las diferentes partes de una aplicación. También aprendí que revisar los errores y seguir intentando es parte del proceso. En general, estas prácticas me ayudaron a tener más confianza y a darme cuenta de todo lo que puedo hacer con lo que vimos en clase.
 
-
 ## Enlace de vídeo
+
 https://drive.google.com/drive/folders/14u626b4az5jaTz_0wM-d1qWYegUuA3ZF?usp=sharing
