@@ -4,8 +4,8 @@ Aplicación móvil para administrar un catálogo de productos con operaciones **
 
 ## Requisitos
 
-- Node.js LTS y npm.
-- Expo Go en un teléfono o un emulador Android/iOS.
+- Node.js 24.3+ (SDK 58 requiere Node 24.3 o superior).
+- Android Studio con Android SDK para compilar y ejecutar el development build localmente.
 - Una cuenta y un proyecto de [Supabase](https://supabase.com/).
 
 ## 1. Preparar la base de datos
@@ -27,16 +27,22 @@ EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY=tu_publishable_key
 
 La publishable/anon key puede incluirse en el cliente cuando RLS está correctamente configurado. `.env` está excluido de Git; no compartas secretos ni subas credenciales.
 
-## 3. Instalar y ejecutar
+## 3. Instalar y ejecutar en Android
 
-Desde la carpeta `SupabaseCRUD`:
+Este proyecto usa **Expo SDK 58**, React Native 0.88 y React 19.3. SDK 58 requiere una versión de Expo Go que todavía no está disponible en las tiendas; para usarlo ahora, crea un development build:
 
 ```bash
 npm install
-npx expo start
+npx expo run:android
 ```
 
-Escanea el QR con Expo Go, o ejecuta `npx expo start --android` / `npx expo start --ios`. Si acabas de editar `.env`, reinicia Expo para que lea las variables.
+El primer comando compila e instala la app de desarrollo en un emulador Android conectado o en un teléfono con depuración USB habilitada. Después inicia Metro con:
+
+```bash
+npm start
+```
+
+Abre la app **Catálogo** instalada en el teléfono/emulador. Para volver a Expo Go, espera la versión de Expo Go compatible con SDK 58; no podrás abrir este proyecto SDK 58 desde una Expo Go basada en SDK anterior.
 
 ## Uso
 
@@ -61,4 +67,4 @@ SupabaseCRUD/
 
 ## Tecnologías
 
-React Native · Expo SDK 54 · Supabase JavaScript Client · PostgreSQL · Row Level Security
+React Native · Expo SDK 58 · Supabase JavaScript Client · PostgreSQL · Row Level Security
