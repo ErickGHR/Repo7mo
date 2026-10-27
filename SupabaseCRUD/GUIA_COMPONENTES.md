@@ -22,7 +22,7 @@ Los componentes de interfaz **no importan `supabase.js` ni escriben consultas**.
 
 ### 01 · Conexión con Supabase
 
-**Componente:** `src/components/ConnectionBanner.js`  
+**Componente:** `src/components/ConnectionBanner.js`
 **Sección en pantalla:** número 01.
 
 El banner recibe dos props:
@@ -34,7 +34,7 @@ No hace la conexión. `App.js` realiza la llamada y le pasa el resultado. El ban
 
 ### 02 · Crear o actualizar un producto
 
-**Componente:** `src/components/ProductForm.js`  
+**Componente:** `src/components/ProductForm.js`
 **Sección en pantalla:** número 02.
 
 El título depende de `editingProduct` en `App.js`:
@@ -78,7 +78,7 @@ La prop `saving` viene del padre. Mientras vale `true`, el botón muestra “Gua
 
 ### 03 · Resumen del inventario
 
-**Componente:** `src/components/InventorySummary.js`  
+**Componente:** `src/components/InventorySummary.js`
 **Sección en pantalla:** número 03.
 
 Recibe `products`, el mismo arreglo que usará la lista. No consulta la base y no guarda otra copia del total:
@@ -92,7 +92,7 @@ El total es un dato **derivado**: sale de `products`. Esto evita tener que acord
 
 ### 04 · Consultar productos
 
-**Componentes:** `src/components/ProductList.js` y `src/components/ProductCard.js`  
+**Componentes:** `src/components/ProductList.js` y `src/components/ProductCard.js`
 **Sección en pantalla:** número 04.
 
 #### `ProductList` y `FlatList`
