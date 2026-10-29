@@ -1,0 +1,5 @@
+<resources>
+    <color name="pulso_background">#07111F</color>
+    <color name="pulso_panel">#101E30</color>
+    <color name="pulso_cyan">#48D7C5</color>
+</resources>
