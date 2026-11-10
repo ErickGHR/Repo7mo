@@ -1,0 +1,21 @@
+plugins {
+    id 'com.android.application'
+}
+
+android {
+    namespace 'com.example.fakewhatsapp'
+    compileSdk 36
+
+    defaultConfig {
+        applicationId 'com.example.fakewhatsapp'
+        minSdk 21
+        targetSdk 27
+        versionCode 1
+        versionName '1.0'
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+}

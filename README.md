@@ -23,6 +23,7 @@ Repositorio de ejercicios y proyectos desarrollados durante el curso con JavaScr
 | [Ejercicio 03](./Ejercicio_03/) | Práctica de estado y ventanas modales. |
 | [FaceRecognition](./FaceRecognition/) | Aplicación de reconocimiento facial con React Native. |
 | [FragmentosAndroid](./FragmentosAndroid/) | Ejemplo Android nativo con una actividad y tres fragmentos. |
+| [FakeWhatsapp](./FakeWhatsapp/) | Demo sencilla de mensajería Android en Java para API 27. |
 | [VertHorizon](./VertHorizon/) | Actividad Android nativa en Java para demostrar el ciclo de vida y la restauración de datos al rotar. |
 | [Fitcalc](./Fitcalc/) | Calculadora de indicadores físicos desarrollada con React Native. |
 | [MongoDBConexion](./MongoDBConexion/) | Aplicación Expo que inicia sesión y consulta un catálogo de películas mediante una API y MongoDB Atlas. |
