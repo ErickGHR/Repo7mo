@@ -6,11 +6,12 @@ Demo sencilla de mensajería para Android, escrita en Java y dirigida a Android 
 
 - Lista de conversaciones y mensajes de ejemplo.
 - Envío de mensajes dentro de una conversación.
+- Doble palomita azul en mensajes enviados marcados como leídos en la demo.
 - Creación de chats con contactos de ejemplo.
 - Pestañas de chats, estados y llamadas.
 - Guardado local de conversaciones con `SharedPreferences`.
 
-No requiere Supabase, servidor, cuenta ni conexión a internet. Los mensajes solo se guardan en el dispositivo o emulador donde se ejecuta.
+No requiere Supabase, servidor, cuenta ni conexión a internet. Los mensajes y su estado de lectura se guardan en el dispositivo o emulador donde se ejecuta; la confirmación se simula localmente.
 
 ## Abrir en Android Studio
 

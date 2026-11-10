@@ -34,6 +34,7 @@ public class MainActivity extends Activity {
     private static final String PREF_CHATS = "chats";
     private static final int GREEN = Color.rgb(7, 94, 84);
     private static final int GREEN_LIGHT = Color.rgb(18, 140, 126);
+    private static final int READ_BLUE = Color.rgb(52, 183, 241);
     private static final int TEXT_DARK = Color.rgb(45, 52, 54);
     private static final int TEXT_MUTED = Color.rgb(117, 125, 128);
     private static final String[] CONTACTS = {
@@ -389,11 +390,20 @@ public class MainActivity extends Activity {
         TextView body = label(message.body, 16, TEXT_DARK, false);
         body.setMaxWidth(getResources().getDisplayMetrics().widthPixels - dp(88));
         bubble.addView(body);
-        TextView time = label(message.time, 10, TEXT_MUTED, false);
-        time.setGravity(Gravity.RIGHT);
-        LinearLayout.LayoutParams timeParams = new LinearLayout.LayoutParams(-1, -2);
-        timeParams.topMargin = dp(2);
-        bubble.addView(time, timeParams);
+        LinearLayout metadata = new LinearLayout(this);
+        metadata.setOrientation(LinearLayout.HORIZONTAL);
+        metadata.setGravity(Gravity.RIGHT | Gravity.CENTER_VERTICAL);
+        metadata.addView(label(message.time, 10, TEXT_MUTED, false));
+        if (message.mine) {
+            TextView checks = label(message.read ? "✓✓" : "✓", 12,
+                    message.read ? READ_BLUE : TEXT_MUTED, true);
+            checks.setPadding(dp(4), 0, 0, 0);
+            checks.setContentDescription(message.read ? "Leído" : "Enviado");
+            metadata.addView(checks);
+        }
+        LinearLayout.LayoutParams metadataParams = new LinearLayout.LayoutParams(-1, -2);
+        metadataParams.topMargin = dp(2);
+        bubble.addView(metadata, metadataParams);
         line.addView(bubble, new LinearLayout.LayoutParams(-2, -2));
         messageList.addView(line, lineParams);
     }
@@ -448,7 +458,9 @@ public class MainActivity extends Activity {
                     if (messages != null) {
                         for (int j = 0; j < messages.length(); j++) {
                             JSONObject item = messages.getJSONObject(j);
-                            chat.messages.add(new Message(item.getString("body"), item.getBoolean("mine"), item.getString("time")));
+                            boolean mine = item.getBoolean("mine");
+                            boolean read = item.optBoolean("read", mine);
+                            chat.messages.add(new Message(item.getString("body"), mine, item.getString("time"), read));
                         }
                     }
                     chats.add(chat);
@@ -504,6 +516,7 @@ public class MainActivity extends Activity {
                     item.put("body", message.body);
                     item.put("mine", message.mine);
                     item.put("time", message.time);
+                    item.put("read", message.read);
                     messages.put(item);
                 }
                 object.put("messages", messages);
@@ -592,11 +605,17 @@ public class MainActivity extends Activity {
         final String body;
         final boolean mine;
         final String time;
+        final boolean read;
 
         Message(String body, boolean mine, String time) {
+            this(body, mine, time, mine);
+        }
+
+        Message(String body, boolean mine, String time, boolean read) {
             this.body = body;
             this.mine = mine;
             this.time = time;
+            this.read = read;
         }
     }
 }
