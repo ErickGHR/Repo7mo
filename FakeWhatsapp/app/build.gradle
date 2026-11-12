@@ -1,6 +1,15 @@
+import java.util.Properties
+
 plugins {
     id 'com.android.application'
 }
+
+def localConfig = new Properties()
+def localConfigFile = rootProject.file('local.properties')
+if (localConfigFile.exists()) {
+    localConfigFile.withInputStream { localConfig.load(it) }
+}
+def javaString = { String value -> value.replace('\\', '\\\\').replace('"', '\\"') }
 
 android {
     namespace 'com.example.fakewhatsapp'
@@ -12,10 +21,26 @@ android {
         targetSdk 27
         versionCode 1
         versionName '1.0'
+        buildConfigField 'String', 'SUPABASE_URL', '"' + javaString(localConfig.getProperty('supabase.url', '')) + '"'
+        buildConfigField 'String', 'SUPABASE_ANON_KEY', '"' + javaString(localConfig.getProperty('supabase.anonKey', '')) + '"'
     }
 
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
+
+    buildFeatures {
+        buildConfig true
+    }
+}
+
+dependencies {
+    // Version 24.1.2 retains minSdk 21 so the app remains compatible with API 27.
+    implementation 'com.google.firebase:firebase-messaging:24.1.2'
+}
+
+// Keep the sample build runnable until the user adds their Firebase configuration.
+if (file('google-services.json').exists()) {
+    apply plugin: 'com.google.gms.google-services'
 }

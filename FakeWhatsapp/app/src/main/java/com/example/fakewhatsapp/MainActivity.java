@@ -11,8 +11,12 @@ import android.view.Gravity;
 import android.view.View;
 import android.view.Window;
 import android.content.SharedPreferences;
+import android.content.Intent;
+import android.net.Uri;
 import android.widget.EditText;
+import android.widget.CheckBox;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.PopupMenu;
 import android.widget.ScrollView;
@@ -25,6 +29,7 @@ import org.json.JSONObject;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Date;
 import java.util.Locale;
 
@@ -32,6 +37,9 @@ import java.util.Locale;
 public class MainActivity extends Activity {
     private static final String PREFS_NAME = "fake_whatsapp";
     private static final String PREF_CHATS = "chats";
+    private static final String PREF_PROFILE_PHOTOS = "profile_photos";
+    private static final int REQUEST_PROFILE_PHOTO = 41;
+    private static final int REQUEST_MESSAGE_IMAGE = 42;
     private static final int GREEN = Color.rgb(7, 94, 84);
     private static final int GREEN_LIGHT = Color.rgb(18, 140, 126);
     private static final int READ_BLUE = Color.rgb(52, 183, 241);
@@ -45,10 +53,13 @@ public class MainActivity extends Activity {
     };
 
     private final ArrayList<Chat> chats = new ArrayList<>();
+    private final ArrayList<View> messageRows = new ArrayList<>();
+    private final HashMap<String, String> profilePhotoUris = new HashMap<>();
     private int selectedTab = 0;
     private Chat currentChat;
     private LinearLayout messageList;
     private ScrollView messageScroll;
+    private String pendingPhotoOwner;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,8 +67,13 @@ public class MainActivity extends Activity {
         Window window = getWindow();
         window.setStatusBarColor(0xff064e46);
         window.setNavigationBarColor(0xff063f39);
+        FakeWhatsappMessagingService.createNotificationChannel(this);
         loadChats();
-        showHome();
+        loadProfilePhotos();
+        SupabaseApi.registerPendingPushToken(this);
+        if (!openNotificationConversation(getIntent())) {
+            showHome();
+        }
     }
 
     private void showHome() {
@@ -102,15 +118,269 @@ public class MainActivity extends Activity {
             showContactPicker();
             return true;
         });
+        menu.getMenu().add("Nuevo grupo").setOnMenuItemClickListener(item -> {
+            showGroupCreator();
+            return true;
+        });
+        menu.getMenu().add("Buscar mensajes").setOnMenuItemClickListener(item -> {
+            showMessageSearch(null);
+            return true;
+        });
+        menu.getMenu().add("Foto de perfil").setOnMenuItemClickListener(item -> {
+            chooseProfilePhoto("Mi perfil");
+            return true;
+        });
+        menu.getMenu().add(SupabaseApi.hasSession(this) ? "Cerrar sesión de API" : "Cuenta / API Supabase")
+                .setOnMenuItemClickListener(item -> {
+                    if (SupabaseApi.hasSession(this)) {
+                        SupabaseApi.signOut(this);
+                        Toast.makeText(this, "Sesión de Supabase cerrada", Toast.LENGTH_SHORT).show();
+                    } else {
+                        showApiAccountDialog();
+                    }
+                    return true;
+                });
         menu.getMenu().add("Acerca de").setOnMenuItemClickListener(item -> {
             new AlertDialog.Builder(this)
                     .setTitle("FakeWhatsapp")
-                    .setMessage("Demo de mensajería hecha en Java. Los chats se guardan solo en este dispositivo.")
+                    .setMessage("Demo de mensajería hecha en Java. Los chats, grupos y fotos de ejemplo se guardan en este dispositivo; la cuenta Supabase registra el token de notificaciones.")
                     .setPositiveButton("Cerrar", null)
                     .show();
             return true;
         });
         menu.show();
+    }
+
+    private void showApiAccountDialog() {
+        if (!SupabaseApi.isConfigured()) {
+            new AlertDialog.Builder(this)
+                    .setTitle("Configurar Supabase")
+                    .setMessage("Agrega supabase.url y supabase.anonKey al archivo local.properties de FakeWhatsapp, vuelve a sincronizar Gradle e inicia sesión para registrar este dispositivo en la API.")
+                    .setPositiveButton("Entendido", null)
+                    .show();
+            return;
+        }
+
+        LinearLayout form = new LinearLayout(this);
+        form.setOrientation(LinearLayout.VERTICAL);
+        form.setPadding(dp(22), dp(8), dp(22), 0);
+        EditText email = new EditText(this);
+        email.setSingleLine(true);
+        email.setHint("Correo electrónico");
+        email.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS);
+        form.addView(email, new LinearLayout.LayoutParams(-1, -2));
+        EditText password = new EditText(this);
+        password.setSingleLine(true);
+        password.setHint("Contraseña");
+        password.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
+        form.addView(password, new LinearLayout.LayoutParams(-1, -2));
+
+        AlertDialog dialog = new AlertDialog.Builder(this)
+                .setTitle("Conectar cuenta Supabase")
+                .setView(form)
+                .setPositiveButton("Iniciar sesión", null)
+                .setNeutralButton("Crear cuenta", null)
+                .setNegativeButton("Cancelar", null)
+                .create();
+        dialog.setOnShowListener(ignored -> {
+            dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(v ->
+                    authenticateApi(email, password, false, dialog));
+            dialog.getButton(AlertDialog.BUTTON_NEUTRAL).setOnClickListener(v ->
+                    authenticateApi(email, password, true, dialog));
+        });
+        dialog.show();
+    }
+
+    private void authenticateApi(EditText email, EditText password, boolean createAccount, AlertDialog dialog) {
+        String emailValue = email.getText().toString().trim();
+        String passwordValue = password.getText().toString();
+        if (emailValue.isEmpty() || passwordValue.length() < 6) {
+            Toast.makeText(this, "Escribe un correo y una contraseña de al menos 6 caracteres", Toast.LENGTH_LONG).show();
+            return;
+        }
+        Toast.makeText(this, createAccount ? "Creando cuenta…" : "Iniciando sesión…", Toast.LENGTH_SHORT).show();
+        SupabaseApi.Callback callback = (success, message) -> {
+            Toast.makeText(this, message, Toast.LENGTH_LONG).show();
+            if (success) dialog.dismiss();
+        };
+        if (createAccount) {
+            SupabaseApi.signUp(this, emailValue, passwordValue, callback);
+        } else {
+            SupabaseApi.signIn(this, emailValue, passwordValue, callback);
+        }
+    }
+
+    private void chooseProfilePhoto(String owner) {
+        pendingPhotoOwner = owner;
+        Intent picker = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+        picker.addCategory(Intent.CATEGORY_OPENABLE);
+        picker.setType("image/*");
+        picker.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION);
+        startActivityForResult(picker, REQUEST_PROFILE_PHOTO);
+    }
+
+    private void chooseMessageImage() {
+        Intent picker = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+        picker.addCategory(Intent.CATEGORY_OPENABLE);
+        picker.setType("image/*");
+        picker.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION);
+        startActivityForResult(picker, REQUEST_MESSAGE_IMAGE);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (resultCode != RESULT_OK || data == null || data.getData() == null) return;
+        Uri uri = data.getData();
+        try {
+            getContentResolver().takePersistableUriPermission(uri, Intent.FLAG_GRANT_READ_URI_PERMISSION);
+        } catch (SecurityException ignored) {
+            // Some gallery apps return a temporary grant only; the current session can still display it.
+        }
+
+        if (requestCode == REQUEST_PROFILE_PHOTO) {
+            profilePhotoUris.put(pendingPhotoOwner == null ? "Mi perfil" : pendingPhotoOwner, uri.toString());
+            saveProfilePhotos();
+            if (currentChat == null) showHome(); else showConversation();
+        } else if (requestCode == REQUEST_MESSAGE_IMAGE && currentChat != null) {
+            Message message = new Message("", true, now(), true, uri.toString());
+            currentChat.messages.add(message);
+            currentChat.lastMessage = "📷 Imagen";
+            currentChat.time = message.time;
+            saveChats();
+            addMessageBubble(message);
+            messageScroll.post(() -> messageScroll.fullScroll(View.FOCUS_DOWN));
+        }
+    }
+
+    private void showGroupCreator() {
+        LinearLayout content = new LinearLayout(this);
+        content.setOrientation(LinearLayout.VERTICAL);
+        content.setPadding(dp(22), dp(4), dp(22), 0);
+
+        EditText groupName = new EditText(this);
+        groupName.setSingleLine(true);
+        groupName.setHint("Nombre del grupo");
+        content.addView(groupName, new LinearLayout.LayoutParams(-1, -2));
+
+        TextView instruction = label("Selecciona al menos dos participantes", 13, TEXT_MUTED, false);
+        instruction.setPadding(0, dp(8), 0, dp(4));
+        content.addView(instruction);
+
+        ScrollView scroll = new ScrollView(this);
+        LinearLayout choices = new LinearLayout(this);
+        choices.setOrientation(LinearLayout.VERTICAL);
+        ArrayList<CheckBox> checks = new ArrayList<>();
+        for (String contact : CONTACTS) {
+            CheckBox check = new CheckBox(this);
+            check.setText(contact);
+            checks.add(check);
+            choices.addView(check, new LinearLayout.LayoutParams(-1, -2));
+        }
+        scroll.addView(choices);
+        content.addView(scroll, new LinearLayout.LayoutParams(-1, dp(220)));
+
+        AlertDialog dialog = new AlertDialog.Builder(this)
+                .setTitle("Crear grupo")
+                .setView(content)
+                .setPositiveButton("Crear", null)
+                .setNegativeButton("Cancelar", null)
+                .create();
+        dialog.setOnShowListener(ignored -> dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(v -> {
+            String name = groupName.getText().toString().trim();
+            ArrayList<String> members = new ArrayList<>();
+            for (int i = 0; i < checks.size(); i++) {
+                if (checks.get(i).isChecked()) members.add(CONTACTS[i]);
+            }
+            if (name.isEmpty() || members.size() < 2) {
+                Toast.makeText(this, "Escribe un nombre y selecciona al menos dos participantes", Toast.LENGTH_LONG).show();
+                return;
+            }
+            Chat group = new Chat(name, AVATAR_COLORS[chats.size() % AVATAR_COLORS.length], true);
+            group.members.addAll(members);
+            chats.add(0, group);
+            saveChats();
+            dialog.dismiss();
+            selectedTab = 0;
+            openChat(group);
+        }));
+        dialog.show();
+    }
+
+    private void showMessageSearch(Chat onlyChat) {
+        EditText queryInput = new EditText(this);
+        queryInput.setSingleLine(true);
+        queryInput.setHint("Texto que quieres encontrar");
+        queryInput.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_CAP_SENTENCES);
+        new AlertDialog.Builder(this)
+                .setTitle(onlyChat == null ? "Buscar mensajes" : "Buscar en " + onlyChat.name)
+                .setView(queryInput)
+                .setPositiveButton("Buscar", (dialog, which) -> showSearchResults(queryInput.getText().toString().trim(), onlyChat))
+                .setNegativeButton("Cancelar", null)
+                .show();
+    }
+
+    private void showSearchResults(String query, Chat onlyChat) {
+        if (query.isEmpty()) {
+            Toast.makeText(this, "Escribe algo para buscar", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        ArrayList<Chat> resultChats = new ArrayList<>();
+        ArrayList<Integer> resultIndexes = new ArrayList<>();
+        ArrayList<String> resultLabels = new ArrayList<>();
+        for (Chat chat : chats) {
+            if (onlyChat != null && chat != onlyChat) continue;
+            for (int i = 0; i < chat.messages.size(); i++) {
+                Message message = chat.messages.get(i);
+                if (!message.deleted && message.body.toLowerCase(Locale.getDefault()).contains(query.toLowerCase(Locale.getDefault()))) {
+                    resultChats.add(chat);
+                    resultIndexes.add(i);
+                    String preview = message.body.isEmpty() ? "📷 Imagen" : message.body;
+                    resultLabels.add(chat.name + " · " + message.time + "\n" + preview);
+                }
+            }
+        }
+        if (resultLabels.isEmpty()) {
+            Toast.makeText(this, "No encontré mensajes con ese texto", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        new AlertDialog.Builder(this)
+                .setTitle("Resultados: " + resultLabels.size())
+                .setItems(resultLabels.toArray(new String[0]), (dialog, which) -> {
+                    Chat chat = resultChats.get(which);
+                    int messageIndex = resultIndexes.get(which);
+                    openChat(chat);
+                    messageScroll.post(() -> {
+                        if (messageIndex < messageRows.size()) {
+                            messageScroll.smoothScrollTo(0, messageRows.get(messageIndex).getTop());
+                        }
+                    });
+                })
+                .setNegativeButton("Cerrar", null)
+                .show();
+    }
+
+    private boolean openNotificationConversation(Intent intent) {
+        if (intent == null) return false;
+        String name = intent.getStringExtra(FakeWhatsappMessagingService.EXTRA_CONVERSATION_TITLE);
+        if (name == null || name.trim().isEmpty()) return false;
+        Chat chat = findChat(name);
+        if (chat == null) {
+            chat = new Chat(name, AVATAR_COLORS[Math.abs(name.hashCode()) % AVATAR_COLORS.length]);
+            chats.add(0, chat);
+            saveChats();
+        }
+        selectedTab = 0;
+        openChat(chat);
+        intent.removeExtra(FakeWhatsappMessagingService.EXTRA_CONVERSATION_TITLE);
+        return true;
+    }
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        setIntent(intent);
+        if (!openNotificationConversation(intent)) showHome();
     }
 
     private View createTabs() {
@@ -166,7 +436,8 @@ public class MainActivity extends Activity {
         row.setGravity(Gravity.CENTER_VERTICAL);
         row.setPadding(dp(16), dp(10), dp(16), dp(10));
 
-        TextView avatar = avatar(chat.name, chat.color);
+        View avatar = avatar(chat.name, chat.color);
+        avatar.setOnClickListener(v -> chooseProfilePhoto(chat.name));
         row.addView(avatar, new LinearLayout.LayoutParams(dp(54), dp(54)));
 
         LinearLayout details = new LinearLayout(this);
@@ -222,13 +493,16 @@ public class MainActivity extends Activity {
         LinearLayout row = new LinearLayout(this);
         row.setGravity(Gravity.CENTER_VERTICAL);
         row.setPadding(dp(16), dp(9), dp(16), dp(9));
-        TextView avatar = avatar(name, color);
+        View avatar = avatar(ownStatus ? "Mi perfil" : name, color);
         if (!ownStatus) {
-            GradientDrawable ring = new GradientDrawable();
-            ring.setShape(GradientDrawable.OVAL);
-            ring.setColor(color);
-            ring.setStroke(dp(3), GREEN_LIGHT);
-            avatar.setBackground(ring);
+            FrameLayout ring = new FrameLayout(this);
+            GradientDrawable ringDrawable = circle(color);
+            ringDrawable.setStroke(dp(3), GREEN_LIGHT);
+            ring.setBackground(ringDrawable);
+            FrameLayout.LayoutParams avatarParams = new FrameLayout.LayoutParams(-1, -1);
+            avatarParams.setMargins(dp(4), dp(4), dp(4), dp(4));
+            ring.addView(avatar, avatarParams);
+            avatar = ring;
         }
         row.addView(avatar, new LinearLayout.LayoutParams(dp(52), dp(52)));
         LinearLayout copy = new LinearLayout(this);
@@ -289,6 +563,7 @@ public class MainActivity extends Activity {
         messageList = new LinearLayout(this);
         messageList.setOrientation(LinearLayout.VERTICAL);
         messageList.setPadding(dp(10), dp(12), dp(10), dp(12));
+        messageRows.clear();
         messageScroll.addView(messageList);
         page.addView(messageScroll, new LinearLayout.LayoutParams(-1, 0, 1));
         for (Message message : currentChat.messages) {
@@ -310,17 +585,34 @@ public class MainActivity extends Activity {
         back.setGravity(Gravity.CENTER);
         back.setOnClickListener(v -> showHome());
         bar.addView(back, new LinearLayout.LayoutParams(dp(42), -1));
-        bar.addView(avatar(currentChat.name, currentChat.color), new LinearLayout.LayoutParams(dp(40), dp(40)));
+        View photo = avatar(currentChat.name, currentChat.color);
+        photo.setOnClickListener(v -> {
+            if (currentChat.isGroup) {
+                Toast.makeText(this, "La foto del grupo no está disponible en esta demo", Toast.LENGTH_SHORT).show();
+            } else {
+                chooseProfilePhoto(currentChat.name);
+            }
+        });
+        bar.addView(photo, new LinearLayout.LayoutParams(dp(40), dp(40)));
 
         LinearLayout person = new LinearLayout(this);
         person.setOrientation(LinearLayout.VERTICAL);
         person.setPadding(dp(10), 0, 0, 0);
         person.addView(label(currentChat.name, 17, Color.WHITE, true));
-        TextView status = label("en línea", 12, 0xffd4e8e5, false);
+        String statusText = currentChat.isGroup
+                ? "Grupo · " + (currentChat.members.size() + 1) + " participantes"
+                : "en línea";
+        TextView status = label(statusText, 12, 0xffd4e8e5, false);
         LinearLayout.LayoutParams statusParams = new LinearLayout.LayoutParams(-2, -2);
         statusParams.topMargin = dp(2);
         person.addView(status, statusParams);
         bar.addView(person, new LinearLayout.LayoutParams(0, -2, 1));
+
+        TextView search = label("⌕", 25, Color.WHITE, false);
+        search.setGravity(Gravity.CENTER);
+        search.setContentDescription("Buscar mensajes en esta conversación");
+        search.setOnClickListener(v -> showMessageSearch(currentChat));
+        bar.addView(search, new LinearLayout.LayoutParams(dp(38), -1));
 
         TextView call = label("☎", 22, Color.WHITE, false);
         call.setGravity(Gravity.CENTER);
@@ -334,6 +626,12 @@ public class MainActivity extends Activity {
         composer.setGravity(Gravity.CENTER_VERTICAL);
         composer.setPadding(dp(8), dp(6), dp(8), dp(6));
         composer.setBackgroundColor(0xfff5f3f0);
+
+        TextView attach = label("▧", 23, GREEN_LIGHT, false);
+        attach.setGravity(Gravity.CENTER);
+        attach.setContentDescription("Adjuntar imagen");
+        attach.setOnClickListener(v -> chooseMessageImage());
+        composer.addView(attach, new LinearLayout.LayoutParams(dp(38), dp(46)));
 
         EditText input = new EditText(this);
         input.setSingleLine(false);
@@ -387,9 +685,24 @@ public class MainActivity extends Activity {
         bubble.setOrientation(LinearLayout.VERTICAL);
         bubble.setPadding(dp(11), dp(7), dp(9), dp(5));
         bubble.setBackground(rounded(message.mine ? 0xffdcf8c6 : Color.WHITE, dp(10)));
-        TextView body = label(message.body, 16, TEXT_DARK, false);
-        body.setMaxWidth(getResources().getDisplayMetrics().widthPixels - dp(88));
-        bubble.addView(body);
+        if (message.imageUri != null && !message.deleted) {
+            ImageView image = new ImageView(this);
+            image.setScaleType(ImageView.ScaleType.CENTER_CROP);
+            image.setAdjustViewBounds(true);
+            image.setMaxWidth(dp(230));
+            image.setMaxHeight(dp(190));
+            try {
+                image.setImageURI(Uri.parse(message.imageUri));
+            } catch (RuntimeException ignored) {
+                image.setImageDrawable(null);
+            }
+            bubble.addView(image, new LinearLayout.LayoutParams(dp(230), dp(170)));
+        }
+        if (!message.body.isEmpty()) {
+            TextView body = label(message.body, 16, TEXT_DARK, false);
+            body.setMaxWidth(getResources().getDisplayMetrics().widthPixels - dp(88));
+            bubble.addView(body);
+        }
         LinearLayout metadata = new LinearLayout(this);
         metadata.setOrientation(LinearLayout.HORIZONTAL);
         metadata.setGravity(Gravity.RIGHT | Gravity.CENTER_VERTICAL);
@@ -405,7 +718,32 @@ public class MainActivity extends Activity {
         metadataParams.topMargin = dp(2);
         bubble.addView(metadata, metadataParams);
         line.addView(bubble, new LinearLayout.LayoutParams(-2, -2));
+        line.setOnLongClickListener(v -> {
+            if (!message.mine || message.deleted) {
+                Toast.makeText(this, "Solo puedes eliminar tus mensajes enviados", Toast.LENGTH_SHORT).show();
+            } else {
+                confirmDeleteMessage(message);
+            }
+            return true;
+        });
         messageList.addView(line, lineParams);
+        messageRows.add(line);
+    }
+
+    private void confirmDeleteMessage(Message message) {
+        new AlertDialog.Builder(this)
+                .setTitle("Eliminar mensaje")
+                .setMessage("El mensaje se reemplazará por “Este mensaje fue eliminado” en este dispositivo.")
+                .setNegativeButton("Cancelar", null)
+                .setPositiveButton("Eliminar", (dialog, which) -> {
+                    message.body = "Este mensaje fue eliminado";
+                    message.imageUri = null;
+                    message.deleted = true;
+                    updatePreview(currentChat);
+                    saveChats();
+                    showConversation();
+                })
+                .show();
     }
 
     private void showContactPicker() {
@@ -452,6 +790,14 @@ public class MainActivity extends Activity {
                 for (int i = 0; i < array.length(); i++) {
                     JSONObject object = array.getJSONObject(i);
                     Chat chat = new Chat(object.getString("name"), object.getInt("color"));
+                    chat.isGroup = object.optBoolean("isGroup", "Familia".equals(chat.name));
+                    JSONArray members = object.optJSONArray("members");
+                    if (members != null) {
+                        for (int j = 0; j < members.length(); j++) chat.members.add(members.optString(j));
+                    } else if ("Familia".equals(chat.name)) {
+                        chat.members.add("Ana López");
+                        chat.members.add("Carlos Ruiz");
+                    }
                     chat.lastMessage = object.optString("lastMessage", "");
                     chat.time = object.optString("time", "");
                     JSONArray messages = object.optJSONArray("messages");
@@ -460,7 +806,10 @@ public class MainActivity extends Activity {
                             JSONObject item = messages.getJSONObject(j);
                             boolean mine = item.getBoolean("mine");
                             boolean read = item.optBoolean("read", mine);
-                            chat.messages.add(new Message(item.getString("body"), mine, item.getString("time"), read));
+                            Message message = new Message(item.optString("body", ""), mine, item.optString("time", ""), read,
+                                    item.has("imageUri") ? item.optString("imageUri", null) : null);
+                            message.deleted = item.optBoolean("deleted", false);
+                            chat.messages.add(message);
                         }
                     }
                     chats.add(chat);
@@ -484,7 +833,9 @@ public class MainActivity extends Activity {
         carlos.messages.add(new Message("Nos vemos mañana 👋", false, "Ayer"));
         updatePreview(carlos);
 
-        Chat family = new Chat("Familia", 0xff8c9d70);
+        Chat family = new Chat("Familia", 0xff8c9d70, true);
+        family.members.add("Ana López");
+        family.members.add("Carlos Ruiz");
         family.messages.add(new Message("Ya voy en camino", true, "Ayer"));
         updatePreview(family);
 
@@ -496,8 +847,33 @@ public class MainActivity extends Activity {
     private void updatePreview(Chat chat) {
         if (!chat.messages.isEmpty()) {
             Message last = chat.messages.get(chat.messages.size() - 1);
-            chat.lastMessage = last.mine ? "Tú: " + last.body : last.body;
+            String preview = last.deleted ? "Este mensaje fue eliminado"
+                    : (last.imageUri != null ? "📷 Imagen" : last.body);
+            chat.lastMessage = last.mine && !last.deleted ? "Tú: " + preview : preview;
             chat.time = last.time;
+        }
+    }
+
+    private void loadProfilePhotos() {
+        String saved = getSharedPreferences(PREFS_NAME, MODE_PRIVATE).getString(PREF_PROFILE_PHOTOS, "{}");
+        try {
+            JSONObject photos = new JSONObject(saved);
+            for (java.util.Iterator<String> keys = photos.keys(); keys.hasNext(); ) {
+                String name = keys.next();
+                profilePhotoUris.put(name, photos.optString(name, ""));
+            }
+        } catch (JSONException ignored) {
+            profilePhotoUris.clear();
+        }
+    }
+
+    private void saveProfilePhotos() {
+        JSONObject photos = new JSONObject();
+        try {
+            for (String name : profilePhotoUris.keySet()) photos.put(name, profilePhotoUris.get(name));
+            getSharedPreferences(PREFS_NAME, MODE_PRIVATE).edit().putString(PREF_PROFILE_PHOTOS, photos.toString()).apply();
+        } catch (JSONException ignored) {
+            // Photo keys and URI strings are always valid JSON values.
         }
     }
 
@@ -510,6 +886,10 @@ public class MainActivity extends Activity {
                 object.put("color", chat.color);
                 object.put("lastMessage", chat.lastMessage);
                 object.put("time", chat.time);
+                object.put("isGroup", chat.isGroup);
+                JSONArray members = new JSONArray();
+                for (String member : chat.members) members.put(member);
+                object.put("members", members);
                 JSONArray messages = new JSONArray();
                 for (Message message : chat.messages) {
                     JSONObject item = new JSONObject();
@@ -517,6 +897,8 @@ public class MainActivity extends Activity {
                     item.put("mine", message.mine);
                     item.put("time", message.time);
                     item.put("read", message.read);
+                    item.put("deleted", message.deleted);
+                    if (message.imageUri != null) item.put("imageUri", message.imageUri);
                     messages.put(item);
                 }
                 object.put("messages", messages);
@@ -528,11 +910,26 @@ public class MainActivity extends Activity {
         }
     }
 
-    private TextView avatar(String name, int color) {
+    private View avatar(String name, int color) {
         TextView view = label(initials(name), 17, Color.WHITE, true);
         view.setGravity(Gravity.CENTER);
         view.setBackground(circle(color));
-        return view;
+        String photoUri = profilePhotoUris.get(name);
+        if (photoUri == null || photoUri.isEmpty()) return view;
+
+        ImageView photo = new ImageView(this);
+        photo.setScaleType(ImageView.ScaleType.CENTER_CROP);
+        try {
+            photo.setImageURI(Uri.parse(photoUri));
+        } catch (RuntimeException ignored) {
+            return view;
+        }
+        if (photo.getDrawable() == null) return view;
+        FrameLayout frame = new FrameLayout(this);
+        frame.setBackground(circle(color));
+        frame.setClipToOutline(true);
+        frame.addView(photo, new FrameLayout.LayoutParams(-1, -1));
+        return frame;
     }
 
     private String initials(String name) {
@@ -592,30 +989,44 @@ public class MainActivity extends Activity {
         final String name;
         final int color;
         final ArrayList<Message> messages = new ArrayList<>();
+        final ArrayList<String> members = new ArrayList<>();
+        boolean isGroup;
         String lastMessage = "";
         String time = "";
 
         Chat(String name, int color) {
+            this(name, color, false);
+        }
+
+        Chat(String name, int color, boolean isGroup) {
             this.name = name;
             this.color = color;
+            this.isGroup = isGroup;
         }
     }
 
     private static class Message {
-        final String body;
+        String body;
         final boolean mine;
         final String time;
         final boolean read;
+        String imageUri;
+        boolean deleted;
 
         Message(String body, boolean mine, String time) {
             this(body, mine, time, mine);
         }
 
         Message(String body, boolean mine, String time, boolean read) {
+            this(body, mine, time, read, null);
+        }
+
+        Message(String body, boolean mine, String time, boolean read, String imageUri) {
             this.body = body;
             this.mine = mine;
             this.time = time;
             this.read = read;
+            this.imageUri = imageUri;
         }
     }
 }

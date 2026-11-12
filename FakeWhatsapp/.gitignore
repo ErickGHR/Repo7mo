@@ -3,3 +3,10 @@ build/
 local.properties
 .idea/
 *.iml
+
+# Supabase local secrets and Firebase service-account credentials
+supabase/functions/.env
+supabase/.temp/
+service-account*.json
+firebase-service-account*.json
+app/google-services.json

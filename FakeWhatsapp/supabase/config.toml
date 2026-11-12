@@ -1,0 +1,3 @@
+[functions.send-message-notification]
+# Database Webhooks authenticate with X-Webhook-Secret stored in Supabase Vault.
+verify_jwt = false
