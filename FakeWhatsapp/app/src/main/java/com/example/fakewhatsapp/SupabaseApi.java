@@ -105,16 +105,22 @@ final class SupabaseApi {
                 credentials.put("password", password);
                 HttpResult result = request("POST", "/auth/v1/" + endpoint, credentials, null);
                 JSONObject response = new JSONObject(result.body);
-                if (result.code >= 200 && result.code < 300 && response.has("access_token")) {
-                    SharedPreferences.Editor editor = context.getSharedPreferences(PREFS, Context.MODE_PRIVATE).edit();
-                    editor.putString(ACCESS_TOKEN, response.getString("access_token"));
-                    editor.putString(REFRESH_TOKEN, response.optString("refresh_token", ""));
-                    editor.apply();
-                    success = true;
-                    resultMessage = endpoint.equals("signup")
-                            ? "Cuenta creada. Si Supabase pide confirmar el correo, revísalo para continuar."
-                            : "Sesión iniciada.";
-                    registerPendingPushToken(context);
+                if (result.code >= 200 && result.code < 300) {
+                    if (response.has("access_token")) {
+                        SharedPreferences.Editor editor = context.getSharedPreferences(PREFS, Context.MODE_PRIVATE).edit();
+                        editor.putString(ACCESS_TOKEN, response.getString("access_token"));
+                        editor.putString(REFRESH_TOKEN, response.optString("refresh_token", ""));
+                        editor.apply();
+                        success = true;
+                        resultMessage = endpoint.equals("signup")
+                                ? "Cuenta creada. Sesión iniciada."
+                                : "Sesión iniciada.";
+                        registerPendingPushToken(context);
+                    } else if (endpoint.equals("signup") && response.optJSONObject("user") != null) {
+                        resultMessage = "Supabase recibió el registro. Revisa tu correo para confirmarlo y luego inicia sesión.";
+                    } else {
+                        resultMessage = response.optString("msg", response.optString("message", response.optString("error_description", resultMessage)));
+                    }
                 } else {
                     resultMessage = response.optString("msg", response.optString("message", response.optString("error_description", resultMessage)));
                 }
