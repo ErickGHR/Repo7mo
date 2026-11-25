@@ -40,11 +40,16 @@ public class MainActivity extends Activity {
     private static final String PREF_PROFILE_PHOTOS = "profile_photos";
     private static final int REQUEST_PROFILE_PHOTO = 41;
     private static final int REQUEST_MESSAGE_IMAGE = 42;
-    private static final int GREEN = Color.rgb(7, 94, 84);
-    private static final int GREEN_LIGHT = Color.rgb(18, 140, 126);
-    private static final int READ_BLUE = Color.rgb(52, 183, 241);
-    private static final int TEXT_DARK = Color.rgb(45, 52, 54);
-    private static final int TEXT_MUTED = Color.rgb(117, 125, 128);
+    private static final int PRIMARY = 0xff202b46;
+    private static final int PRIMARY_DARK = 0xff172039;
+    private static final int ACCENT = 0xff45bfa7;
+    private static final int READ_BLUE = 0xff3ca6d9;
+    private static final int BACKGROUND = 0xfff1f4f9;
+    private static final int CONVERSATION_BACKGROUND = 0xffedf1f7;
+    private static final int OUTGOING_BUBBLE = 0xffd9f1e9;
+    private static final int TEXT_DARK = 0xff202b46;
+    private static final int TEXT_MUTED = 0xff78839a;
+    private static final int SOFT_TEXT = 0xffd8e2f2;
     private static final String[] CONTACTS = {
             "Ana López", "Carlos Ruiz", "María García", "Luis Torres", "Sofía Pérez"
     };
@@ -65,8 +70,8 @@ public class MainActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Window window = getWindow();
-        window.setStatusBarColor(0xff064e46);
-        window.setNavigationBarColor(0xff063f39);
+        window.setStatusBarColor(PRIMARY_DARK);
+        window.setNavigationBarColor(PRIMARY_DARK);
         FakeWhatsappMessagingService.createNotificationChannel(this);
         loadChats();
         loadProfilePhotos();
@@ -74,13 +79,14 @@ public class MainActivity extends Activity {
         if (!openNotificationConversation(getIntent())) {
             showHome();
         }
+        handleAuthRedirect(getIntent());
     }
 
     private void showHome() {
         currentChat = null;
         LinearLayout page = new LinearLayout(this);
         page.setOrientation(LinearLayout.VERTICAL);
-        page.setBackgroundColor(Color.WHITE);
+        page.setBackgroundColor(BACKGROUND);
         page.addView(createHomeBar(), new LinearLayout.LayoutParams(-1, dp(56)));
         page.addView(createTabs(), new LinearLayout.LayoutParams(-1, dp(46)));
 
@@ -98,9 +104,9 @@ public class MainActivity extends Activity {
         LinearLayout bar = new LinearLayout(this);
         bar.setGravity(Gravity.CENTER_VERTICAL);
         bar.setPadding(dp(18), 0, dp(12), 0);
-        bar.setBackgroundColor(GREEN);
+        bar.setBackgroundColor(PRIMARY);
 
-        TextView title = label("WhatsApp", 21, Color.WHITE, true);
+        TextView title = label("FakeWhatsapp", 20, Color.WHITE, true);
         bar.addView(title, new LinearLayout.LayoutParams(0, -1, 1));
 
         TextView menuButton = label("⋮", 28, Color.WHITE, false);
@@ -174,6 +180,11 @@ public class MainActivity extends Activity {
         password.setHint("Contraseña");
         password.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
         form.addView(password, new LinearLayout.LayoutParams(-1, -2));
+        TextView recovery = label("¿Olvidaste tu contraseña?", 14, ACCENT, true);
+        recovery.setGravity(Gravity.RIGHT);
+        LinearLayout.LayoutParams recoveryParams = new LinearLayout.LayoutParams(-1, -2);
+        recoveryParams.topMargin = dp(10);
+        form.addView(recovery, recoveryParams);
 
         AlertDialog dialog = new AlertDialog.Builder(this)
                 .setTitle("Conectar cuenta Supabase")
@@ -187,8 +198,89 @@ public class MainActivity extends Activity {
                     authenticateApi(email, password, false, dialog));
             dialog.getButton(AlertDialog.BUTTON_NEUTRAL).setOnClickListener(v ->
                     authenticateApi(email, password, true, dialog));
+            recovery.setOnClickListener(v -> sendPasswordRecovery(email, dialog));
         });
         dialog.show();
+    }
+
+    private void sendPasswordRecovery(EditText email, AlertDialog dialog) {
+        String emailValue = email.getText().toString().trim();
+        if (emailValue.isEmpty()) {
+            email.setError("Escribe tu correo electrónico");
+            return;
+        }
+        SupabaseApi.resetPassword(this, emailValue, (success, message) -> {
+            Toast.makeText(this, message, Toast.LENGTH_LONG).show();
+            if (success) dialog.dismiss();
+        });
+    }
+
+    private void showPasswordUpdateDialog() {
+        LinearLayout form = new LinearLayout(this);
+        form.setOrientation(LinearLayout.VERTICAL);
+        form.setPadding(dp(22), dp(8), dp(22), 0);
+        EditText password = new EditText(this);
+        password.setSingleLine(true);
+        password.setHint("Nueva contraseña");
+        password.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
+        form.addView(password, new LinearLayout.LayoutParams(-1, -2));
+        EditText confirmation = new EditText(this);
+        confirmation.setSingleLine(true);
+        confirmation.setHint("Confirmar contraseña");
+        confirmation.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
+        form.addView(confirmation, new LinearLayout.LayoutParams(-1, -2));
+
+        AlertDialog dialog = new AlertDialog.Builder(this)
+                .setTitle("Restablecer contraseña")
+                .setMessage("Crea una contraseña nueva para tu cuenta.")
+                .setView(form)
+                .setPositiveButton("Guardar", null)
+                .setNegativeButton("Cancelar", (ignored, which) -> SupabaseApi.signOut(this))
+                .create();
+        dialog.setOnShowListener(ignored -> dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(v -> {
+            String newPassword = password.getText().toString();
+            if (newPassword.length() < 6) {
+                password.setError("Usa al menos 6 caracteres");
+                return;
+            }
+            if (!newPassword.equals(confirmation.getText().toString())) {
+                confirmation.setError("Las contraseñas no coinciden");
+                return;
+            }
+            SupabaseApi.updatePassword(this, newPassword, (success, message) -> {
+                Toast.makeText(this, message, Toast.LENGTH_LONG).show();
+                if (success) {
+                    SupabaseApi.signOut(this);
+                    dialog.dismiss();
+                }
+            });
+        }));
+        dialog.show();
+    }
+
+    private boolean handleAuthRedirect(Intent intent) {
+        Uri callbackUri = intent == null ? null : intent.getData();
+        if (callbackUri == null || !"fakewhatsapp".equals(callbackUri.getScheme())
+                || !"auth-callback".equals(callbackUri.getHost())) {
+            return false;
+        }
+
+        String fragment = callbackUri.getFragment();
+        Uri tokenUri = fragment == null ? callbackUri : Uri.parse("https://callback.invalid/?" + fragment);
+        String error = tokenUri.getQueryParameter("error_description");
+        if (error != null) {
+            Toast.makeText(this, error.replace('+', ' '), Toast.LENGTH_LONG).show();
+            return true;
+        }
+        boolean stored = SupabaseApi.storeRecoverySession(this,
+                tokenUri.getQueryParameter("access_token"),
+                tokenUri.getQueryParameter("refresh_token"));
+        if (stored) {
+            showPasswordUpdateDialog();
+        } else {
+            Toast.makeText(this, "El enlace no contiene una sesión de recuperación válida.", Toast.LENGTH_LONG).show();
+        }
+        return true;
     }
 
     private void authenticateApi(EditText email, EditText password, boolean createAccount, AlertDialog dialog) {
@@ -380,23 +472,30 @@ public class MainActivity extends Activity {
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
         setIntent(intent);
+        Uri data = intent == null ? null : intent.getData();
+        if (data != null && "fakewhatsapp".equals(data.getScheme())
+                && "auth-callback".equals(data.getHost())) {
+            showHome();
+            handleAuthRedirect(intent);
+            return;
+        }
         if (!openNotificationConversation(intent)) showHome();
     }
 
     private View createTabs() {
         LinearLayout tabs = new LinearLayout(this);
-        tabs.setBackgroundColor(GREEN);
+        tabs.setBackgroundColor(PRIMARY);
         String[] names = {"CHATS", "ESTADOS", "LLAMADAS"};
         for (int i = 0; i < names.length; i++) {
             final int tab = i;
             LinearLayout item = new LinearLayout(this);
             item.setOrientation(LinearLayout.VERTICAL);
             item.setGravity(Gravity.CENTER);
-            TextView text = label(names[i], 13, i == selectedTab ? Color.WHITE : 0xffc5d9d6, true);
+            TextView text = label(names[i], 13, i == selectedTab ? Color.WHITE : 0xffbdc8da, true);
             text.setGravity(Gravity.CENTER);
             item.addView(text, new LinearLayout.LayoutParams(-1, 0, 1));
             View indicator = new View(this);
-            indicator.setBackgroundColor(i == selectedTab ? 0xffb2dfdb : GREEN);
+            indicator.setBackgroundColor(i == selectedTab ? ACCENT : PRIMARY);
             item.addView(indicator, new LinearLayout.LayoutParams(-1, dp(3)));
             item.setOnClickListener(v -> {
                 selectedTab = tab;
@@ -422,7 +521,7 @@ public class MainActivity extends Activity {
         TextView fab = label("+", 32, Color.WHITE, false);
         fab.setGravity(Gravity.CENTER);
         fab.setElevation(dp(6));
-        fab.setBackground(circle(GREEN_LIGHT));
+        fab.setBackground(circle(ACCENT));
         fab.setContentDescription("Nueva conversación");
         fab.setOnClickListener(v -> showContactPicker());
         FrameLayout.LayoutParams fabParams = new FrameLayout.LayoutParams(dp(56), dp(56), Gravity.BOTTOM | Gravity.RIGHT);
@@ -434,7 +533,9 @@ public class MainActivity extends Activity {
     private View createChatRow(Chat chat) {
         LinearLayout row = new LinearLayout(this);
         row.setGravity(Gravity.CENTER_VERTICAL);
-        row.setPadding(dp(16), dp(10), dp(16), dp(10));
+        row.setPadding(dp(14), dp(10), dp(14), dp(10));
+        row.setBackground(rounded(Color.WHITE, dp(16)));
+        row.setElevation(dp(1));
 
         View avatar = avatar(chat.name, chat.color);
         avatar.setOnClickListener(v -> chooseProfilePhoto(chat.name));
@@ -461,17 +562,14 @@ public class MainActivity extends Activity {
         details.addView(preview, previewParams);
 
         row.setMinimumHeight(dp(76));
-        row.setBackgroundResource(android.R.drawable.list_selector_background);
         row.setOnClickListener(v -> openChat(chat));
 
         LinearLayout wrapper = new LinearLayout(this);
         wrapper.setOrientation(LinearLayout.VERTICAL);
         wrapper.addView(row, new LinearLayout.LayoutParams(-1, -2));
-        View divider = new View(this);
-        divider.setBackgroundColor(0xffeeeeee);
-        LinearLayout.LayoutParams dividerParams = new LinearLayout.LayoutParams(-1, dp(1));
-        dividerParams.leftMargin = dp(84);
-        wrapper.addView(divider, dividerParams);
+        LinearLayout.LayoutParams wrapperParams = new LinearLayout.LayoutParams(-1, -2);
+        wrapperParams.setMargins(dp(12), dp(5), dp(12), dp(5));
+        wrapper.setLayoutParams(wrapperParams);
         return wrapper;
     }
 
@@ -497,7 +595,7 @@ public class MainActivity extends Activity {
         if (!ownStatus) {
             FrameLayout ring = new FrameLayout(this);
             GradientDrawable ringDrawable = circle(color);
-            ringDrawable.setStroke(dp(3), GREEN_LIGHT);
+            ringDrawable.setStroke(dp(3), ACCENT);
             ring.setBackground(ringDrawable);
             FrameLayout.LayoutParams avatarParams = new FrameLayout.LayoutParams(-1, -1);
             avatarParams.setMargins(dp(4), dp(4), dp(4), dp(4));
@@ -541,7 +639,7 @@ public class MainActivity extends Activity {
         detailParams.topMargin = dp(4);
         copy.addView(detail, detailParams);
         row.addView(copy, new LinearLayout.LayoutParams(0, -2, 1));
-        TextView call = label("☎", 22, GREEN_LIGHT, false);
+        TextView call = label("☎", 22, ACCENT, false);
         row.addView(call);
         row.setOnClickListener(v -> Toast.makeText(this, "Llamada de demostración", Toast.LENGTH_SHORT).show());
         return row;
@@ -555,7 +653,7 @@ public class MainActivity extends Activity {
     private void showConversation() {
         LinearLayout page = new LinearLayout(this);
         page.setOrientation(LinearLayout.VERTICAL);
-        page.setBackgroundColor(0xffeee9e2);
+        page.setBackgroundColor(CONVERSATION_BACKGROUND);
         page.addView(createConversationBar(), new LinearLayout.LayoutParams(-1, dp(58)));
 
         messageScroll = new ScrollView(this);
@@ -579,7 +677,7 @@ public class MainActivity extends Activity {
         LinearLayout bar = new LinearLayout(this);
         bar.setGravity(Gravity.CENTER_VERTICAL);
         bar.setPadding(dp(4), 0, dp(12), 0);
-        bar.setBackgroundColor(GREEN);
+        bar.setBackgroundColor(PRIMARY);
 
         TextView back = label("‹", 34, Color.WHITE, false);
         back.setGravity(Gravity.CENTER);
@@ -602,7 +700,7 @@ public class MainActivity extends Activity {
         String statusText = currentChat.isGroup
                 ? "Grupo · " + (currentChat.members.size() + 1) + " participantes"
                 : "en línea";
-        TextView status = label(statusText, 12, 0xffd4e8e5, false);
+        TextView status = label(statusText, 12, SOFT_TEXT, false);
         LinearLayout.LayoutParams statusParams = new LinearLayout.LayoutParams(-2, -2);
         statusParams.topMargin = dp(2);
         person.addView(status, statusParams);
@@ -625,9 +723,9 @@ public class MainActivity extends Activity {
         LinearLayout composer = new LinearLayout(this);
         composer.setGravity(Gravity.CENTER_VERTICAL);
         composer.setPadding(dp(8), dp(6), dp(8), dp(6));
-        composer.setBackgroundColor(0xfff5f3f0);
+        composer.setBackgroundColor(Color.WHITE);
 
-        TextView attach = label("▧", 23, GREEN_LIGHT, false);
+        TextView attach = label("▧", 23, ACCENT, false);
         attach.setGravity(Gravity.CENTER);
         attach.setContentDescription("Adjuntar imagen");
         attach.setOnClickListener(v -> chooseMessageImage());
@@ -645,7 +743,7 @@ public class MainActivity extends Activity {
 
         TextView send = label("➤", 22, Color.WHITE, true);
         send.setGravity(Gravity.CENTER);
-        send.setBackground(circle(GREEN_LIGHT));
+        send.setBackground(circle(ACCENT));
         send.setContentDescription("Enviar mensaje");
         LinearLayout.LayoutParams sendParams = new LinearLayout.LayoutParams(dp(46), dp(46));
         sendParams.leftMargin = dp(8);
@@ -684,7 +782,7 @@ public class MainActivity extends Activity {
         LinearLayout bubble = new LinearLayout(this);
         bubble.setOrientation(LinearLayout.VERTICAL);
         bubble.setPadding(dp(11), dp(7), dp(9), dp(5));
-        bubble.setBackground(rounded(message.mine ? 0xffdcf8c6 : Color.WHITE, dp(10)));
+        bubble.setBackground(rounded(message.mine ? OUTGOING_BUBBLE : Color.WHITE, dp(16)));
         if (message.imageUri != null && !message.deleted) {
             ImageView image = new ImageView(this);
             image.setScaleType(ImageView.ScaleType.CENTER_CROP);

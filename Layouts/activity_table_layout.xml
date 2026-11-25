@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="24dp"
+    android:stretchColumns="1">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_span="2"
+        android:gravity="center"
+        android:text="TableLayout"
+        android:textSize="24sp"
+        android:textStyle="bold" />
+
+    <TableRow>
+        <TextView
+            android:padding="8dp"
+            android:text="Nombre" />
+        <TextView
+            android:padding="8dp"
+            android:text="Edad" />
+    </TableRow>
+
+    <TableRow>
+        <TextView
+            android:padding="8dp"
+            android:text="Ana" />
+        <TextView
+            android:padding="8dp"
+            android:text="20" />
+    </TableRow>
+
+    <TableRow>
+        <TextView
+            android:padding="8dp"
+            android:text="Luis" />
+        <TextView
+            android:padding="8dp"
+            android:text="22" />
+    </TableRow>
+
+    <TableRow>
+        <Button
+            android:id="@+id/botonMenu"
+            android:layout_span="2"
+            android:text="Regresar al menú" />
+    </TableRow>
+
+</TableLayout>

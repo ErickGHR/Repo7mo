@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="24dp">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:text="Ejemplos de Layouts"
+        android:textSize="24sp"
+        android:textStyle="bold" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginTop="12dp"
+        android:text="Selecciona un tipo de layout"
+        android:textSize="16sp" />
+
+    <Button
+        android:id="@+id/botonLinear"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
+        android:text="Ver LinearLayout" />
+
+    <Button
+        android:id="@+id/botonRelative"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Ver RelativeLayout" />
+
+    <Button
+        android:id="@+id/botonFrame"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Ver FrameLayout" />
+
+    <Button
+        android:id="@+id/botonTable"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Ver TableLayout" />
+
+</LinearLayout>

@@ -23,6 +23,7 @@ android {
         versionName '1.0'
         buildConfigField 'String', 'SUPABASE_URL', '"' + javaString(localConfig.getProperty('supabase.url', '')) + '"'
         buildConfigField 'String', 'SUPABASE_ANON_KEY', '"' + javaString(localConfig.getProperty('supabase.anonKey', '')) + '"'
+        buildConfigField 'String', 'SUPABASE_REDIRECT_URL', '"' + javaString(localConfig.getProperty('supabase.redirectUrl', 'fakewhatsapp://auth-callback')) + '"'
     }
 
     compileOptions {

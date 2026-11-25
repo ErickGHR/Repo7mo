@@ -12,6 +12,7 @@ Demo de mensajería Android nativa, escrita en Java y dirigida a Android Oreo (`
 - Eliminación lógica de mensajes propios con pulsación larga.
 - Chats y estado guardados en `SharedPreferences`.
 - Registro e inicio de sesión de Supabase desde el menú **Cuenta / API Supabase**.
+- Recuperación y actualización de contraseña con enlace de Supabase Auth y regreso a `fakewhatsapp://auth-callback`.
 - Registro y baja del token FCM al iniciar y cerrar sesión.
 - Canal Android de notificaciones y apertura del chat indicado al tocar una notificación.
 - Migración Supabase con perfiles, dispositivos, chats directos y grupales, mensajes de texto e imagen, recibos de lectura, almacenamiento privado, búsqueda y RLS.
@@ -19,12 +20,14 @@ Demo de mensajería Android nativa, escrita en Java y dirigida a Android Oreo (`
 
 Los chats de muestra, grupos, fotos y mensajes de esta demo se guardan en el dispositivo. El cliente se conecta a Supabase para autenticación y registro del token FCM cuando se configura; las operaciones de chat en la interfaz todavía no se sincronizan con las tablas remotas. La migración deja el esquema y las operaciones REST para esa API. El repo no contiene credenciales reales de Supabase o Firebase.
 
+El rediseño usa una paleta azul noche y menta, tarjetas y avatares tipográficos. No se agregaron imágenes de referencia al proyecto; las fotos siguen siendo opcionales y solo se cargan si cada persona elige una desde su dispositivo.
+
 ## Abrir y compilar
 
 1. Instala Android SDK Platform 36 desde **Tools > SDK Manager > SDK Platforms**.
 2. Abre la carpeta `FakeWhatsapp` en Android Studio y espera la sincronización de Gradle.
 3. Para probar el modo local, ejecuta **Run** en un dispositivo o emulador.
-4. Para conectar la API, sigue [`supabase/README.md`](supabase/README.md), agrega la URL y la clave pública de Supabase a `local.properties` y sincroniza Gradle.
+4. Para conectar la API, sigue [`supabase/README.md`](supabase/README.md), agrega `supabase.url` y `supabase.anonKey` a `local.properties`, permite `fakewhatsapp://auth-callback` en **Authentication > URL Configuration** y sincroniza Gradle.
 5. Para FCM, registra `com.example.fakewhatsapp` en Firebase y coloca su `google-services.json` en `app/`. Ese archivo se ignora en Git porque depende de tu proyecto.
 
 Para generar el APK de depuración, ejecuta `gradlew.bat assembleDebug`. El archivo queda en `app/build/outputs/apk/debug/app-debug.apk`; puedes copiarlo al teléfono e instalarlo. Esta app nativa Java no se ejecuta dentro de Expo Go.

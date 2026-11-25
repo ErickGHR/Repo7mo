@@ -14,6 +14,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -47,6 +48,78 @@ final class SupabaseApi {
 
     static void signUp(Context context, String email, String password, Callback callback) {
         authenticate(context, "signup", email, password, callback);
+    }
+
+    static void resetPassword(Context context, String email, Callback callback) {
+        if (!isConfigured()) {
+            callback.onComplete(false, "Configura Supabase antes de recuperar la contraseña.");
+            return;
+        }
+        EXECUTOR.execute(() -> {
+            boolean success = false;
+            String message = "No se pudo enviar el enlace de recuperación.";
+            try {
+                JSONObject body = new JSONObject();
+                body.put("email", email);
+                String redirect = URLEncoder.encode(BuildConfig.SUPABASE_REDIRECT_URL, "UTF-8");
+                HttpResult result = request("POST", "/auth/v1/recover?redirect_to=" + redirect, body, null);
+                if (result.code >= 200 && result.code < 300) {
+                    success = true;
+                    message = "Si el correo existe, recibirás un enlace para restablecer la contraseña.";
+                } else {
+                    message = responseMessage(result.body, message);
+                }
+            } catch (Exception exception) {
+                message = "Error de conexión: " + exception.getMessage();
+            }
+            final boolean completed = success;
+            final String resultMessage = message;
+            MAIN.post(() -> callback.onComplete(completed, resultMessage));
+        });
+    }
+
+    static boolean storeRecoverySession(Context context, String accessToken, String refreshToken) {
+        if (accessToken == null || accessToken.isEmpty() || refreshToken == null || refreshToken.isEmpty()) {
+            return false;
+        }
+        context.getSharedPreferences(PREFS, Context.MODE_PRIVATE).edit()
+                .putString(ACCESS_TOKEN, accessToken)
+                .putString(REFRESH_TOKEN, refreshToken)
+                .apply();
+        return true;
+    }
+
+    static void updatePassword(Context context, String password, Callback callback) {
+        if (!isConfigured()) {
+            callback.onComplete(false, "Configura Supabase antes de cambiar la contraseña.");
+            return;
+        }
+        SharedPreferences preferences = context.getSharedPreferences(PREFS, Context.MODE_PRIVATE);
+        String accessToken = preferences.getString(ACCESS_TOKEN, "");
+        if (accessToken.isEmpty()) {
+            callback.onComplete(false, "Abre el enlace de recuperación antes de guardar la contraseña.");
+            return;
+        }
+        EXECUTOR.execute(() -> {
+            boolean success = false;
+            String message = "No se pudo actualizar la contraseña.";
+            try {
+                JSONObject body = new JSONObject();
+                body.put("password", password);
+                HttpResult result = requestWithRefresh(context, "PUT", "/auth/v1/user", body, accessToken);
+                if (result.code >= 200 && result.code < 300) {
+                    success = true;
+                    message = "Contraseña actualizada correctamente.";
+                } else {
+                    message = responseMessage(result.body, message);
+                }
+            } catch (Exception exception) {
+                message = "Error de conexión: " + exception.getMessage();
+            }
+            final boolean completed = success;
+            final String resultMessage = message;
+            MAIN.post(() -> callback.onComplete(completed, resultMessage));
+        });
     }
 
     static void signOut(Context context) {
@@ -164,10 +237,15 @@ final class SupabaseApi {
     }
 
     private static HttpResult requestWithRefresh(Context context, String path, JSONObject body, String accessToken) throws Exception {
-        HttpResult result = request("POST", path, body, accessToken);
+        return requestWithRefresh(context, "POST", path, body, accessToken);
+    }
+
+    private static HttpResult requestWithRefresh(Context context, String method, String path,
+                                                 JSONObject body, String accessToken) throws Exception {
+        HttpResult result = request(method, path, body, accessToken);
         if (result.code != HttpURLConnection.HTTP_UNAUTHORIZED) return result;
         String refreshed = refreshSession(context);
-        return refreshed == null ? result : request("POST", path, body, refreshed);
+        return refreshed == null ? result : request(method, path, body, refreshed);
     }
 
     private static String refreshSession(Context context) throws Exception {
@@ -186,6 +264,16 @@ final class SupabaseApi {
                 .putString(REFRESH_TOKEN, response.optString("refresh_token", refreshToken))
                 .apply();
         return freshAccessToken;
+    }
+
+    private static String responseMessage(String body, String fallback) {
+        try {
+            JSONObject response = new JSONObject(body);
+            return response.optString("msg", response.optString("message",
+                    response.optString("error_description", fallback)));
+        } catch (Exception ignored) {
+            return fallback;
+        }
     }
 
     private static final class HttpResult {

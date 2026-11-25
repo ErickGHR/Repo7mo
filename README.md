@@ -16,6 +16,7 @@ Repositorio de ejercicios y proyectos desarrollados durante el curso con JavaScr
 | Proyecto | Descripción |
 | --- | --- |
 | [DemoImagen](./DemoImagen/) | Ejercicio de imágenes y fondos en React Native. |
+| [DemoIntent](./DemoIntent/) | Ejemplo Android nativo en Java para enviar datos entre actividades con `Intent`. |
 | [DinamicFlatList](./DinamicFlatList/) | Lista dinámica con `FlatList` y ventanas modales. |
 | [DrawerNavigation](./DrawerNavigation/) | Navegación lateral con React Navigation. |
 | [Ejercicio 01](./Ejercicio_01/) | Práctica inicial de componentes, estilos, texto e imágenes. |
@@ -23,9 +24,10 @@ Repositorio de ejercicios y proyectos desarrollados durante el curso con JavaScr
 | [Ejercicio 03](./Ejercicio_03/) | Práctica de estado y ventanas modales. |
 | [FaceRecognition](./FaceRecognition/) | Aplicación de reconocimiento facial con React Native. |
 | [FragmentosAndroid](./FragmentosAndroid/) | Ejemplo Android nativo con una actividad y tres fragmentos. |
-| [FakeWhatsapp](./FakeWhatsapp/) | Demo sencilla de mensajería Android en Java para API 27. |
+| [FakeWhatsapp](./FakeWhatsapp/) | Demo de mensajería Android en Java, con diseño renovado, chats locales y autenticación Supabase opcional. |
 | [VertHorizon](./VertHorizon/) | Actividad Android nativa en Java para demostrar el ciclo de vida y la restauración de datos al rotar. |
 | [Fitcalc](./Fitcalc/) | Calculadora de indicadores físicos desarrollada con React Native. |
+| [Layouts](./Layouts/) | Práctica Android en Java con layouts `Linear`, `Relative`, `Frame` y `Table`. |
 | [MongoDBConexion](./MongoDBConexion/) | Aplicación Expo que inicia sesión y consulta un catálogo de películas mediante una API y MongoDB Atlas. |
 | [RiftCalc](./RiftCalc/) | Calculadora de daño de League of Legends creada con React Native, Expo y TypeScript. |
 | [Sensor](./Sensor/) | Aplicación móvil que utiliza acelerómetro, giroscopio, magnetómetro y podómetro. |

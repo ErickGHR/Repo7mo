@@ -8,7 +8,9 @@ El proyecto `FakeWhatsapp` está creado en `ErickGHR's Org`, región East US (No
 
 La migración `migrations/20261111000000_fakewhatsapp_api.sql` ya se ejecutó desde **SQL Editor**. Verifiqué las tablas `profiles`, `push_devices`, `conversations`, `conversation_members` y `messages`, todas con RLS habilitado, además de los buckets privados `profile-photos` y `message-images`.
 
-En **Authentication > Sign In / Providers**, Email está habilitado, se permiten registros y se requiere confirmar el correo. El APK ya tiene la URL y la clave pública `sb_publishable_...` en `FakeWhatsapp/local.properties`; ese archivo está ignorado por Git. Las claves `sb_publishable_...` son para el cliente y nunca deben sustituirse por `sb_secret_...` ni `service_role`.
+En **Authentication > Sign In / Providers**, Email está habilitado, se permiten registros y se requiere confirmar el correo. El proyecto Android lee la URL y la clave publicable `sb_publishable_...` de `FakeWhatsapp/local.properties`; ese archivo está ignorado por Git y debe configurarse localmente. Las claves publicables son para el cliente y nunca deben sustituirse por `sb_secret_...` ni `service_role`.
+
+Para recuperar la contraseña, el cliente usa el callback `fakewhatsapp://auth-callback`. Agrégalo a **Authentication > URL Configuration > Redirect URLs** del proyecto; el cliente envía esa URL en la solicitud de recuperación y abre el formulario de contraseña al volver a la app.
 
 La migración se ejecutó manualmente desde Dashboard. No ejecutes `supabase db push` para volver a aplicar esta migración hasta sincronizar el historial local. El CLI no hace falta para completar la configuración pendiente de FCM.
 
