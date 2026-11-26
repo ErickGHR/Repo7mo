@@ -4,7 +4,7 @@ Aplicación nativa de Android escrita en Java. El módulo Android Studio está e
 
 ## Ejecutar
 
-1. Abre la carpeta Sensor/android en Android Studio.
+1. Abre la carpeta ORDINARIO/Sensores_NavDrawer/android en Android Studio.
 2. Espera a que termine Gradle Sync.
 3. Selecciona el emulador o conecta un teléfono Android y pulsa Run en el módulo app.
 

@@ -17,5 +17,5 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = 'FragmentosAndroid'
+rootProject.name = 'Fragmentado'
 include ':app'

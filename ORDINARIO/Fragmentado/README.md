@@ -5,7 +5,7 @@ Aplicación Android nativa escrita completamente en Java, con una sola actividad
 ## Abrir y ejecutar
 
 1. Abre Android Studio.
-2. Selecciona **Open** y elige esta carpeta `FragmentosAndroid`.
+2. Selecciona **Open** y elige esta carpeta `Fragmentado`.
 3. Espera a que termine la sincronización de Gradle.
 4. Ejecuta la app en un emulador o dispositivo Android.
 

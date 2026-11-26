@@ -26,7 +26,7 @@ El SQL activa **RLS** (seguridad por filas) y agrega políticas para que esta pr
 
 ## 2. Configurar el cliente de Supabase
 
-En Supabase abre **Project Settings → API** y copia la **Project URL** y la **publishable key**. Crea `SupabaseCRUD/.env` a partir de `.env.example` y coloca los valores:
+En Supabase abre **Project Settings → API** y copia la **Project URL** y la **publishable key**. Crea `.env` en esta carpeta a partir de `.env.example` y coloca los valores:
 
 ```env
 EXPO_PUBLIC_SUPABASE_URL=https://tu-proyecto.supabase.co
@@ -55,7 +55,7 @@ Durante el lanzamiento de SDK 58, Expo Go compatible aún puede no estar disponi
 ## 4. Cómo se divide el proyecto
 
 ```text
-SupabaseCRUD/
+Persistencia/
 ├── App.js
 ├── supabase.js
 ├── supabase.sql

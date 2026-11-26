@@ -4,7 +4,7 @@ Aplicación Android nativa escrita en Java. El proyecto no utiliza Expo, React N
 
 ## Abrir y ejecutar
 
-1. Abre la carpeta `Sensor/android` con Android Studio.
+1. Abre la carpeta `ORDINARIO/Sensores_NavDrawer/android` con Android Studio.
 2. Espera a que Gradle Sync termine.
 3. Elige un emulador o teléfono Android, selecciona el módulo `app` y pulsa Run.
 

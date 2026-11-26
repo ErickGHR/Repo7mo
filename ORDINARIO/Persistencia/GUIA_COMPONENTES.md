@@ -252,7 +252,7 @@ RLS significa *Row Level Security*: Postgres evalúa políticas para permitir o 
 
 | Síntoma | Qué revisar |
 | --- | --- |
-| Falta configurar Supabase | `.env` debe estar dentro de `SupabaseCRUD`, las variables deben comenzar con `EXPO_PUBLIC_` y Expo debe reiniciarse después de editarlo. |
+| Falta configurar Supabase | `.env` debe estar dentro de `Persistencia`, las variables deben comenzar con `EXPO_PUBLIC_` y Expo debe reiniciarse después de editarlo. |
 | `Invalid API key` | Project URL y publishable key deben ser del mismo proyecto. Nunca usar `service_role` en la app. |
 | `relation productos does not exist` | Ejecutar `supabase.sql` en el proyecto correcto y verificar esquema `public`. |
 | Error de permisos/RLS | Revisar que exista una política para la operación que se intenta realizar. |
